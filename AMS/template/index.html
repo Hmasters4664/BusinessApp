@@ -12,6 +12,7 @@
     <!-- Title Page-->
     <title>Dashboard</title>
     {% load static %}
+    {% load i18n staticfiles %}
     <!-- Fontfaces CSS-->
     <link href="{% static 'css/font-face.css' %}" rel="stylesheet" media="all">
     <link href="{% static 'vendor/font-awesome-4.7/css/font-awesome.min.css' %}" rel="stylesheet" media="all">
@@ -34,6 +35,29 @@
 
     <!-- Main CSS-->
     <link href="{% static 'css/theme.css'%}" rel="stylesheet" media="all">
+    <script type="text/javascript">
+       var USERS_LIST_JSON_URL = '{% url "getsets" %}';
+        // translations for datatables
+        var oLanguages = {
+            oPaginate:{
+                sFirst:'<<',
+                sLast: '>>',
+                sNext: '>',
+                sPrevious: '<'
+            },
+            sInfo:'{% trans "Showing _START_ to _END_ of _TOTAL_ entries" %}',
+            sInfoEmpty: '{% trans "No entries to show" %}',
+            sInfoFiltered: '{% trans "(filtered from _MAX_ total entries)" %}',
+            sLengthMenu:'{% trans "Show _MENU_ entries" %}',
+            sProcessing: '{% trans "Processing" %}',
+            sSearch: '{% trans "Filter records:" %}',
+            sZeroRecords: '{% trans "No data to show" %}'
+        }
+       </script>
+
+
+
+
 
 </head>
 
@@ -365,8 +389,26 @@
             <div class="main-content">
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
-                            {% csrf_token %}
-                            {{ datatable }}
+
+                            <table id="tb1" class="display">
+                            <thead>
+                                <th>{% trans "id" %}</th>
+                                <th>{% trans "Date Acquired" %}</th>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Description" %}</th>
+                                <th>{% trans "Type" %}</th>
+                                <th>{% trans "Barcode" %}</th>
+                                <th>{% trans "Serial number" %}</th>
+                                <th>{% trans "Location" %}</th>
+                                <th>{% trans "Status" %}</th>
+                                <th>{% trans "Owner" %}</th>
+                                <th>{% trans "Department" %}</th>
+                                <th>{% trans "Added" %}</th>
+                                <th>{% trans "Modified" %}</th>
+                            </thead>
+                                <tbody>
+                                 </tbody>
+    </table>
                                 </div>
                             </div>
                         </div>
@@ -404,6 +446,7 @@
     <!-- Main JS-->
     <script src="{% static 'js/tables.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+
     
 
 </body>

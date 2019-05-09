@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'rest_framework',
     'django_tables2',
-    'datatableview',
 ]
 
 
