@@ -10,9 +10,8 @@ from django.views.generic.edit import FormView
 from django.views.generic.base import View, TemplateView
 from django.core import serializers
 import json
-from django.http import JsonResponse
-from django_datatables_view.base_datatable_view import BaseDatatableView
 from .forms import AssetForm, LocationForm, ModificationForm
+from django.views.generic.list import ListView
 
 # Create your views here.
 class addAsset(FormView):
@@ -35,10 +34,12 @@ class addLocation(FormView):
 
 
 
-class main(View):
-
-    def get(self,request,*args,**kwargs):
-        return render_to_response('index.html')
+class main(ListView):
+    model = Asset
+    template_name= 'index.html'
+    context_object_name = 'assets'
+    paginate_by = 10
+    queryset = Asset.objects.all()
 
 def Asset_asJson(request):
     object_list = Asset.objects.all().values()
@@ -49,15 +50,6 @@ def Asset_asJson(request):
     
     return HttpResponse(test_all, content_type='application/json')
 
-class AssetListJson(BaseDatatableView):
-    model = Asset
-    columns = ['asset_id', 'acquisition_date','asset_name','description', 'asset_type', 'asset_barcode',
-               'asset_serial_number','asset_location','asset_status','asset_owner','asset_department','added_date',
-               'modified_date']
-    order_columns = ['acquisition_date', 'asset_id']
 
-    def filter_queryset(self, qs):
-        search = self.request.GET.get('search[value]', None)
-        if search:
-            qs = qs.filter(asset_name__istartswith=search)
-        return qs
+
+

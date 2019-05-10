@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'AMS',
     'crispy_forms',
     'rest_framework',
+    'table',
     'django_tables2',
 ]
 

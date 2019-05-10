@@ -35,25 +35,8 @@
 
     <!-- Main CSS-->
     <link href="{% static 'css/theme.css'%}" rel="stylesheet" media="all">
-    <script type="text/javascript">
-       var USERS_LIST_JSON_URL = '{% url "getsets" %}';
-        // translations for datatables
-        var oLanguages = {
-            oPaginate:{
-                sFirst:'<<',
-                sLast: '>>',
-                sNext: '>',
-                sPrevious: '<'
-            },
-            sInfo:'{% trans "Showing _START_ to _END_ of _TOTAL_ entries" %}',
-            sInfoEmpty: '{% trans "No entries to show" %}',
-            sInfoFiltered: '{% trans "(filtered from _MAX_ total entries)" %}',
-            sLengthMenu:'{% trans "Show _MENU_ entries" %}',
-            sProcessing: '{% trans "Processing" %}',
-            sSearch: '{% trans "Filter records:" %}',
-            sZeroRecords: '{% trans "No data to show" %}'
-        }
-       </script>
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
 
 
 
@@ -389,26 +372,61 @@
             <div class="main-content">
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
+                    <div class="card">
+                        <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Buy date</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Barcode</th>
+                                <th>Serial</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Owner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                         {% for asset in assets %}
+                        <tr>
+                            <td>{{ asset.acquisition_date }}</td>
+                            <td>{{ asset.asset_name }}</td>
+                            <td>{{ asset.description }}</td>
+                            <td>{{ asset.asset_type }}</td>
+                            <td>{{ asset.asset_barcode }}</td>
+                            <td>{{ asset.asset_serial_number }}</td>
+                            <td>{{ asset.asset_location }}</td>
+                            <td>{{ asset.asset_status }}</td>
+                            <td>{{ asset.asset_owner }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
 
-                            <table id="tb1" class="display">
-                            <thead>
-                                <th>{% trans "id" %}</th>
-                                <th>{% trans "Date Acquired" %}</th>
-                                <th>{% trans "Name" %}</th>
-                                <th>{% trans "Description" %}</th>
-                                <th>{% trans "Type" %}</th>
-                                <th>{% trans "Barcode" %}</th>
-                                <th>{% trans "Serial number" %}</th>
-                                <th>{% trans "Location" %}</th>
-                                <th>{% trans "Status" %}</th>
-                                <th>{% trans "Owner" %}</th>
-                                <th>{% trans "Department" %}</th>
-                                <th>{% trans "Added" %}</th>
-                                <th>{% trans "Modified" %}</th>
-                            </thead>
-                                <tbody>
-                                 </tbody>
-    </table>
+
+                    {% if is_paginated %}
+                        <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+                    {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                    </ul>
+                    {% endif %}
+                        </div>
                                 </div>
                             </div>
                         </div>
@@ -444,7 +462,6 @@
     <script src="{% static 'vendor/data-tables/dataTables.bootstrap4.min.js' %}"></script>
 
     <!-- Main JS-->
-    <script src="{% static 'js/tables.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
 
     
