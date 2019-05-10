@@ -13,6 +13,7 @@ import json
 from .forms import AssetForm, LocationForm, ModificationForm
 from django.views.generic.list import ListView
 
+
 # Create your views here.
 class addAsset(FormView):
     model= Asset
@@ -41,13 +42,12 @@ class main(ListView):
     paginate_by = 10
     queryset = Asset.objects.all()
 
-def Asset_asJson(request):
-    object_list = Asset.objects.all().values()
+def Search(request):
+    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search'))
     
-    jason = list(object_list)
-    test_all = json.dumps({"data": jason},indent=4, sort_keys=True, default=str)
-    data = {'test_data': test_all,}
-    
+    #jason = list(object_list)
+    test_all = json.dumps(object_list)
+
     return HttpResponse(test_all, content_type='application/json')
 
 

@@ -35,7 +35,6 @@
 
     <!-- Main CSS-->
     <link href="{% static 'css/theme.css'%}" rel="stylesheet" media="all">
-    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
 
 
 
@@ -200,8 +199,9 @@
                     <div class="container-fluid">
                         <div class="header-wrap">
                             <form class="form-header" action="" method="POST">
-                                <input class="au-input au-input--xl" type="text" name="search" placeholder="Search for datas &amp; reports..." />
-                                <button class="au-btn--submit" type="submit">
+                                {% csrf_token %}
+                                <input class="au-input au-input--xl" type="text" id="txtSearch" name="search" placeholder="Search for through table" />
+                                <button class="au-btn--submit" type="submit" id="find">
                                     <i class="zmdi zmdi-search"></i>
                                 </button>
                             </form>
@@ -388,7 +388,7 @@
                                 <th>Owner</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="searchBody">
                          {% for asset in assets %}
                         <tr>
                             <td>{{ asset.acquisition_date }}</td>
@@ -459,11 +459,10 @@
     <script src="{% static 'vendor/chartjs/Chart.bundle.min.js' %}"></script>
     <script src="{% static 'vendor/select2/select2.min.js' %}">
     </script>
-    <script src="{% static 'vendor/data-tables/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'vendor/data-tables/dataTables.bootstrap4.min.js' %}"></script>
 
     <!-- Main JS-->
     <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/search.js' %}"></script>
 
     
 
