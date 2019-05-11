@@ -1,27 +1,30 @@
 $(function() {
     $('#find').click(function() {
         $.ajax({
-            url: "{% url 'search' %}",
+            url: USERS_LIST_JSON_URL,
            data: {'search': document.getElementById('txtSearch').value,},
             type: 'GET',
+            dataType: "json",
             success: function(data) {
 
-                data = JSON.parse(data);
+                //data = JSON.parse(data[0]);
+                console.log(data[0].asset_name);
                 $('#searchBody').html('');
                 for (i in data){
+
                 $('#searchBody').append(
                     "<tr>" +
-                    "<td>" + data[i][0] + "</td>" +
-                    "<td>" + data[i][1] + "</td>" +
-                    "<td>" + data[i][2] + "</td>" +
-                    "<td>" + data[i][3] + "</td>" +
-                    "<td>" + data[i][4] + "</td>" +
-                    "<td>" + data[i][5] + "</td>" +
-                    "<td>" + data[i][6] + "</td>" +
-                    "<td>" + data[i][7] + "</td>" +
-                    "<td>" + data[i][8] + "</td>" +
+                    "<td>" + data[i].acquisition_date + "</td>" +
+                    "<td>" + data[i].asset_name + "</td>" +
+                    "<td>" + data[i].description + "</td>" +
+                    "<td>" + data[i].asset_type + "</td>" +
+                    "<td>" + data[i].asset_barcode + "</td>" +
+                    "<td>" + data[i].asset_serial_number + "</td>" +
+                    "<td>" + data[i].asset_location + "</td>" +
+                    "<td>" + data[i].asset_status + "</td>" +
+                    "<td>" + data[i].asset_owner + "</td>" +
                     "</tr>");
-                    console.log(data);
+                    //console.log(data);
                 };
             },
             error: function(error) {

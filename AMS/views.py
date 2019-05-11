@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse
+from django.http import JsonResponse
 from .models import Asset, Location, Modification
 from django.views.generic import CreateView
 from django.views.generic.edit import FormView
@@ -43,12 +44,13 @@ class main(ListView):
     queryset = Asset.objects.all()
 
 def Search(request):
-    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search'))
+    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).values("acquisition_date",
+                                                                                              "asset_name","description","asset_type","asset_barcode","asset_serial_number",
+                                                                                              "asset_location","asset_status","asset_owner")
     
-    #jason = list(object_list)
-    test_all = json.dumps(object_list)
+    jason = list(object_list)
 
-    return HttpResponse(test_all, content_type='application/json')
+    return JsonResponse(jason, safe=False)
 
 
 

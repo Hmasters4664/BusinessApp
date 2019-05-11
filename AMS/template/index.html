@@ -35,7 +35,10 @@
 
     <!-- Main CSS-->
     <link href="{% static 'css/theme.css'%}" rel="stylesheet" media="all">
+    <script type="text/javascript">
+         var USERS_LIST_JSON_URL = '{% url "search" %}';
 
+    </script>
 
 
 
@@ -198,13 +201,14 @@
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
                         <div class="header-wrap">
-                            <form class="form-header" action="" method="POST">
+                            <form class="form-header" id="formhold" action="{% url 'search' %}" method="GET">
                                 {% csrf_token %}
-                                <input class="au-input au-input--xl" type="text" id="txtSearch" name="search" placeholder="Search for through table" />
-                                <button class="au-btn--submit" type="submit" id="find">
+                                <input class="au-input au-input--xl" type="text" id="txtSearch"  placeholder="Search for through table" />
+
+                            </form>
+                             <button class="au-btn--submit" type="submit" id="find">
                                     <i class="zmdi zmdi-search"></i>
                                 </button>
-                            </form>
                             <div class="header-button">
                                 <div class="noti-wrap">
                                     <div class="noti__item js-item-menu">
@@ -372,7 +376,7 @@
             <div class="main-content">
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
-                    <div class="card">
+                    <!---<div class="card">-->
                         <div class="table-responsive table--no-card m-b-30">
                             <table class="table table-borderless table-striped table-earning">
                         <thead>
