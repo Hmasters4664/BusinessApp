@@ -1,5 +1,5 @@
 $(function() {
-    $('#find').click(function() {
+    $('#txtSearch').keyup(function() {
         $.ajax({
             url: USERS_LIST_JSON_URL,
            data: {'search': document.getElementById('txtSearch').value,},
@@ -8,7 +8,7 @@ $(function() {
             success: function(data) {
 
                 //data = JSON.parse(data[0]);
-                console.log(data[0].asset_name);
+                //console.log(data[0].asset_name);
                 $('#searchBody').html('');
                 for (i in data){
 

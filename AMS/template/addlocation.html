@@ -166,20 +166,28 @@
             </div>
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
-                    <ul class="list-unstyled navbar__list">
-                        <li>
+                     <ul class="list-unstyled navbar__list">
+                            <li class="has-sub">
+                            <a class="js-arrow" href="#">
+                                <i class="fas fa-copy"></i>Assets</a>
+                            <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
+                                 <li>
                                 <a href="{% url 'main'%}">
                                     <i class="far fas fa-table"></i>Show Assets</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'add'%}">
+                                 </li>
+
+                                 <li>
+                                <a href="{% url 'add'%}">
                                 <i class="far fa-check-square"></i>Add Assets</a>
-                        </li>
-                        <li>
+                                 </li>
+
+                            </ul>
+                 </li>
+                         <li>
                             <a href="{% url 'location'%}">
                                 <i class="fas fa-map-marker-alt"></i>Add Location</a>
                         </li>
-                       
+
                     </ul>
                 </nav>
             </div>

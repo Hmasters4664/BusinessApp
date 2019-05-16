@@ -175,15 +175,24 @@
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
                     <ul class="list-unstyled navbar__list">
-                        <li>
+
+                 <li class="has-sub">
+                            <a class="js-arrow" href="#">
+                                <i class="fas fa-copy"></i>Assets</a>
+                            <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
+                                 <li>
                                 <a href="{% url 'main'%}">
                                     <i class="far fas fa-table"></i>Show Assets</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'add'%}">
+                                 </li>
+
+                                 <li>
+                                <a href="{% url 'add'%}">
                                 <i class="far fa-check-square"></i>Add Assets</a>
-                        </li>
-                        <li>
+                                 </li>
+
+                            </ul>
+                 </li>
+                         <li>
                             <a href="{% url 'location'%}">
                                 <i class="fas fa-map-marker-alt"></i>Add Location</a>
                         </li>
@@ -201,13 +210,8 @@
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
                         <div class="header-wrap">
-                            <form class="form-header" id="formhold" action="{% url 'search' %}" method="GET">
                                 {% csrf_token %}
                                 <input class="au-input au-input--xl" type="text" id="txtSearch"  placeholder="Search for through table" />
-
-                            </form>
-                             <button class="au-btn--submit" type="submit" id="find">
-                                    <i class="zmdi zmdi-search"></i>
                                 </button>
                             <div class="header-button">
                                 <div class="noti-wrap">
@@ -466,7 +470,7 @@
 
     <!-- Main JS-->
     <script src="{% static 'js/main.js' %}"></script>
-        <script src="{% static 'js/search.js' %}"></script>
+    <script src="{% static 'js/search.js' %}"></script>
 
     
 
