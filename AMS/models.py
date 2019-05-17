@@ -47,6 +47,9 @@ class Location(models.Model):
     floor =models.CharField(max_length=3)
     adress = models.TextField(max_length=200)
 
+    def __str__(self):
+        return self.adress
+
 
 class Modification(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)

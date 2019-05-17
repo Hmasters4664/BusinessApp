@@ -13,6 +13,7 @@ from django.core import serializers
 import json
 from .forms import AssetForm, LocationForm, ModificationForm
 from django.views.generic.list import ListView
+#from background_task import background
 
 
 # Create your views here.
@@ -49,7 +50,6 @@ def Search(request):
                                                                                               "asset_location","asset_status","asset_owner")
     
     jason = list(object_list)
-
     return JsonResponse(jason, safe=False)
 
 
