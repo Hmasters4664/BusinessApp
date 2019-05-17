@@ -30,6 +30,8 @@ class Asset(models.Model):
     asset_department = models.CharField(max_length=50)
     added_date = models.DateField(default=datetime.date.today)
     modified_date = models.DateField(default=datetime.date.today)
+    purchase_value = models.DecimalField(max_digits=10, decimal_places=2,default=0.00)
+    current_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     #invoices = models.FileField(upload_to='invoices/', blank=True, )
 
     def natural_key(self):
