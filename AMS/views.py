@@ -22,6 +22,14 @@ class addAsset(FormView):
     template_name= 'assets.html'
     form_class = AssetForm
     success_url = '/weblog/assets/'
+
+    def get_form(self, form_class):
+        try:
+            asset = Asset.objects.get(user=self.request.user)
+            return form_class(instance=asset, **self.get_form_kwargs())
+        except Asset.DoesNotExist:
+            return form_class(**self.get_form_kwargs())
+
     def form_valid(self,form):
         form.save()
         return super().form_valid(form)
