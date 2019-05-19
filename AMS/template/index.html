@@ -394,6 +394,7 @@
                                 <th>Location</th>
                                 <th>Status</th>
                                 <th>Owner</th>
+                                <th>Edit</th>
                             </tr>
                         </thead>
                         <tbody id="searchBody">
@@ -408,6 +409,7 @@
                             <td>{{ asset.asset_location }}</td>
                             <td>{{ asset.asset_status }}</td>
                             <td>{{ asset.asset_owner }}</td>
+                            <td ><a href="{% url 'modify' asset.asset_id %}">Edit</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
