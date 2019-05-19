@@ -11,7 +11,7 @@ $(function() {
                 //console.log(data[0].asset_name);
                 $('#searchBody').html('');
                 for (i in data){
-
+                var link = "asset/" +  data[i].asset_id;
                 $('#searchBody').append(
                     "<tr>" +
                     "<td>" + data[i].acquisition_date + "</td>" +
@@ -23,6 +23,7 @@ $(function() {
                     "<td>" + data[i].asset_location + "</td>" +
                     "<td>" + data[i].asset_status + "</td>" +
                     "<td>" + data[i].asset_owner + "</td>" +
+                    '<td>' + "<a href=" + link + ">" + 'Edit' + "</a>" + '</td>' +
                     "</tr>");
                     //console.log(data);
                 };
