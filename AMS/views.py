@@ -15,6 +15,7 @@ from .forms import AssetForm, LocationForm, ModificationForm
 from django.views.generic.list import ListView
 from django.views.generic import UpdateView
 #from .background import hello
+import datetime
 
 
 # Create your views here.
@@ -62,10 +63,12 @@ class editAsset(UpdateView):
 
     def get_object(self, *args, **kwargs):
         asset = get_object_or_404(Asset, pk=self.kwargs['pk'])
+        asset.modified_date = datetime.date.today
+
+
 
         # We can also get user object using self.request.user  but that doesnt work
         # for other models.
-
         return asset
 
 

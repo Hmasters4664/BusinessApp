@@ -17,6 +17,12 @@ class Asset(models.Model):
             ('Working', 'Working'),
             ('Disabled', 'Disabled'),
     )
+
+    Depreciation = (
+        ('Straight Line', 'Straight Line'),
+        ('Double-Declining Balance', 'Double-Declining Balance'),
+        ('Sum of Years', 'Sum of Years'),
+    )
     asset_id= models.AutoField(primary_key=True)
     acquisition_date = models.DateField(default=datetime.date.today)
     asset_name =  models.CharField(max_length=50, blank=True, )
@@ -30,9 +36,12 @@ class Asset(models.Model):
     asset_department = models.CharField(max_length=50)
     added_date = models.DateField(default=datetime.date.today)
     modified_date = models.DateField(default=datetime.date.today)
-    purchase_value = models.DecimalField(max_digits=10, decimal_places=2,default=200.00)
-    residual_value = models.DecimalField(max_digits=10, decimal_places=2,default=0.00)
-    current_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    purchase_value = models.DecimalField(max_digits=19, decimal_places=2,default=200.00)
+    residual_value = models.DecimalField(max_digits=19, decimal_places=2,default=0.00)
+    current_value = models.DecimalField(max_digits=19, decimal_places=2, default=200.00)
+    life_expectancy = models.IntegerField(default=3)
+    depr_model = models.CharField(choices=Depreciation, max_length=30,default='Straight Line')
+    currentVal_date = models.DateField(default=datetime.date.today)
     #invoices = models.FileField(upload_to='invoices/', blank=True, )
 
     def natural_key(self):
