@@ -14,7 +14,7 @@ import json
 from .forms import AssetForm, LocationForm, ModificationForm
 from django.views.generic.list import ListView
 from django.views.generic import UpdateView
-#from background_task import background
+#from .background import hello
 
 
 # Create your views here.
@@ -40,6 +40,7 @@ class addLocation(FormView):
 
 class main(ListView):
     model = Asset
+    #hello()
     template_name= 'index.html'
     context_object_name = 'assets'
     paginate_by = 10
