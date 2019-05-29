@@ -63,7 +63,7 @@ class editAsset(UpdateView):
 
     def get_object(self, *args, **kwargs):
         asset = get_object_or_404(Asset, pk=self.kwargs['pk'])
-        asset.modified_date = datetime.date.today
+        #asset.modified_date = datetime.date.today
 
 
 
