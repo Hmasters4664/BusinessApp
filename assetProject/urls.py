@@ -19,6 +19,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    #url(r'^admin/', admin.site.urls),
-    path('weblog/', include('AMS.urls')),
+    url(r'^admin/', admin.site.urls),
+    path('assetmanager/', include('AMS.urls')),
 ]

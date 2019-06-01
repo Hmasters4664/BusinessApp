@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.base_user import AbstractBaseUser
 import datetime
+from django.conf import settings
+from .managers import UserManager
+from django.utils.translation import ugettext_lazy as _
 
 # Create your models here.
 class Asset(models.Model):
@@ -32,7 +36,7 @@ class Asset(models.Model):
     asset_serial_number = models.CharField(max_length=80, blank=True, )
     asset_location = models.ForeignKey("Location", on_delete=models.PROTECT)
     asset_status = models.CharField(choices=STATUS_CHOICES, max_length=10)
-    asset_owner = models.CharField(max_length=50)
+    asset_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     asset_department = models.CharField(max_length=50)
     added_date = models.DateField(default=datetime.date.today)
     modified_date = models.DateField(default=datetime.date.today)
@@ -64,10 +68,23 @@ class Location(models.Model):
 
 
 class Modification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     asset = models.ForeignKey("Asset", on_delete=models.PROTECT)
     modified_date = models.DateField()
     description = models.TextField(max_length=1000)
 
 
-    
+class User(AbstractBaseUser, PermissionsMixin):
+    user_id = models.AutoField(primary_key=True)
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
+    email = models.EmailField(_('email address'), unique=True)
+    is_manager = models.BooleanField(_('active'), default=False)
+
+    objects = UserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.email
