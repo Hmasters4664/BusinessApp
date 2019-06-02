@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'rest_framework',
     'django_tables2',
+    'user',
 ]
 
 
@@ -131,5 +132,4 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
-AUTH_USER_MODEL = 'AMS.User'
+AUTH_USER_MODEL = 'user.User'

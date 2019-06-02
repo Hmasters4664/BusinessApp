@@ -15,38 +15,47 @@ from .forms import AssetForm, LocationForm, ModificationForm
 from django.views.generic.list import ListView
 from django.views.generic import UpdateView
 #from .background import hello
+from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
-class addAsset(FormView):
+class addAsset(LoginRequiredMixin, FormView):
     model= Asset
+    login_url = '/assetmanager/login/'
+    redirect_field_name = 'redirect_to'
     template_name= 'assets.html'
     form_class = AssetForm
-    success_url = '/weblog/assets/'
+    success_url = '/assetmanager/assets/'
     def form_valid(self,form):
         form.save()
         return super().form_valid(form)
 
-class addLocation(FormView):
+class addLocation(LoginRequiredMixin, FormView):
     model=Location
+    login_url = '/assetmanager/login/'
+    redirect_field_name = 'redirect_to'
     template_name= 'addlocation.html'
     form_class = LocationForm
-    success_url = '/weblog/assets/'
+    success_url = '/assetmanager/assets/'
     def form_valid(self,form):
         form.save()
         return super().form_valid(form)
 
 
 
-class main(ListView):
+class main(LoginRequiredMixin, ListView):
     model = Asset
+    login_url = '/assetmanager/login/'
+    redirect_field_name = 'redirect_to'
     #hello()
     template_name= 'index.html'
     context_object_name = 'assets'
     paginate_by = 10
     queryset = Asset.objects.all()
 
+@login_required
 def Search(request):
     object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).values("asset_id","acquisition_date",
                                                                                               "asset_name","description","asset_type","asset_barcode","asset_serial_number",
@@ -55,11 +64,13 @@ def Search(request):
     jason = list(object_list)
     return JsonResponse(jason, safe=False)
 
-class editAsset(UpdateView):
+class editAsset(LoginRequiredMixin, UpdateView):
     model = Asset
+    login_url = '/assetmanager/login/'
+    redirect_field_name = 'redirect_to'
     template_name = 'assets.html'
     form_class = AssetForm
-    success_url = '/weblog/assets/'
+    success_url = '/assetmanager/assets/'
 
     def get_object(self, *args, **kwargs):
         asset = get_object_or_404(Asset, pk=self.kwargs['pk'])
@@ -69,5 +80,7 @@ class editAsset(UpdateView):
         return asset
 
 
-
+class Login(FormView):
+    template_name = 'login.html'
+    success_url = '/assetmanager/assets/'
 

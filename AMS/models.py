@@ -74,17 +74,3 @@ class Modification(models.Model):
     description = models.TextField(max_length=1000)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    user_id = models.AutoField(primary_key=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
-    email = models.EmailField(_('email address'), unique=True)
-    is_manager = models.BooleanField(_('active'), default=False)
-
-    objects = UserManager()
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
-    def __str__(self):
-        return self.email
