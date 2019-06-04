@@ -10,9 +10,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    is_staff = models.BooleanField(_('active'), default=False)
-    is_manager = models.BooleanField(_('active'), default=False)
-
+    is_staff = models.BooleanField(_('staff'), default=False)
+    is_manager = models.BooleanField(_('manger'), default=False)
+    is_active = models.BooleanField(_('active'), default=True)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
