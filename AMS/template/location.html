@@ -11,8 +11,8 @@
 
     <!-- Title Page-->
     <title>Dashboard</title>
-    {% load crispy_forms_tags %}
     {% load static %}
+    {% load i18n staticfiles %}
     <!-- Fontfaces CSS-->
     <link href="{% static 'css/font-face.css' %}" rel="stylesheet" media="all">
     <link href="{% static 'vendor/font-awesome-4.7/css/font-awesome.min.css' %}" rel="stylesheet" media="all">
@@ -35,6 +35,14 @@
 
     <!-- Main CSS-->
     <link href="{% static 'css/theme.css'%}" rel="stylesheet" media="all">
+    <script type="text/javascript">
+         var USERS_LIST_JSON_URL = '{% url "search" %}';
+
+    </script>
+
+
+
+
 
 </head>
 
@@ -166,8 +174,9 @@
             </div>
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
-                     <ul class="list-unstyled navbar__list">
-                            <li class="has-sub">
+                    <ul class="list-unstyled navbar__list">
+
+                 <li class="has-sub">
                             <a class="js-arrow" href="#">
                                 <i class="fas fa-desktop"></i>Assets</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
@@ -198,8 +207,8 @@
                                  </li>
 
                             </ul>
-                          </li>
-
+                       </li>
+                       
                     </ul>
                 </nav>
             </div>
@@ -213,12 +222,9 @@
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
                         <div class="header-wrap">
-                            <form class="form-header" action="" method="POST">
-                                <input class="au-input au-input--xl" type="text" name="search" placeholder="Search for datas &amp; reports..." />
-                                <button class="au-btn--submit" type="submit">
-                                    <i class="zmdi zmdi-search"></i>
+                                {% csrf_token %}
+                                <input class="au-input au-input--xl" type="text" id="txtSearch"  placeholder="Search for through table" />
                                 </button>
-                            </form>
                             <div class="header-button">
                                 <div class="noti-wrap">
                                     <div class="noti__item js-item-menu">
@@ -386,27 +392,62 @@
             <div class="main-content">
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
-                        <div>
-                            <div>
-                                <div class="card">
-                                    <form method="POST">
-                                        
-                                        {% csrf_token %}
-                                        {{ form|crispy }}
+                    <!---<div class="card">-->
+                        <div class="table-responsive table--no-card m-b-30">
+                            <table class="table table-borderless table-striped table-earning">
+                        <thead>
+                            <tr>
+                                <th>City</th>
+                                <th>Province</th>
+                                <th>Country</th>
+                                <th>Building</th>
+                                <th>Floor</th>
+                                <th>Address</th>
 
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-dot-circle-o"></i> Submit
-                                        </button>
-                                    </form>
-                                        
-                                    </div>
-                                   
+                            </tr>
+                        </thead>
+                        <tbody id="searchBody">
+                         {% for location in locations %}
+                        <tr>
+                            <td>{{ location.city }}</td>
+                            <td>{{ location.province }}</td>
+                            <td>{{ location.country }}</td>
+                            <td>{{ location.building }}</td>
+                            <td>{{ location.floor }}</td>
+                            <td>{{ location.adress }}</td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+
+
+                    {% if is_paginated %}
+                        <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+                    {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                    </ul>
+                    {% endif %}
+                        </div>
                                 </div>
-                                
                             </div>
-                            </div>
-                            </div>
-                            </div>
+                        </div>
+                  
             
             <!-- END MAIN CONTENT-->
             <!-- END PAGE CONTAINER-->
@@ -434,11 +475,12 @@
     <script src="{% static 'vendor/chartjs/Chart.bundle.min.js' %}"></script>
     <script src="{% static 'vendor/select2/select2.min.js' %}">
     </script>
-    <script src="{% static 'vendor/data-tables/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'vendor/data-tables/dataTables.bootstrap4.min.js' %}"></script>
 
     <!-- Main JS-->
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/search.js' %}"></script>
+
+    
 
 </body>
 

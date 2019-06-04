@@ -89,7 +89,7 @@ class editAsset(LoginRequiredMixin, UpdateView):
 
 class Login(FormView):
     template_name = 'login.html'
-    success_url = '/assets/'
+    success_url = '/assetmanager/assets/'
     form_class = AuthenticationForm
     redirect_field_name = REDIRECT_FIELD_NAME
 
@@ -114,7 +114,16 @@ class Login(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, host=self.request.get_host()):
+        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
 
+class LocationList(LoginRequiredMixin, ListView):
+    model = Location
+    login_url = '/assetmanager/login/'
+    redirect_field_name = 'redirect_to'
+    #hello()
+    template_name= 'location.html'
+    context_object_name = 'locations'
+    paginate_by = 10
+    queryset = Asset.objects.all()

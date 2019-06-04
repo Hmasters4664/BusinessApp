@@ -178,7 +178,7 @@
 
                  <li class="has-sub">
                             <a class="js-arrow" href="#">
-                                <i class="fas fa-copy"></i>Assets</a>
+                                <i class="fas fa-desktop"></i>Assets</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
                                  <li>
                                 <a href="{% url 'main'%}">
@@ -192,10 +192,22 @@
 
                             </ul>
                  </li>
-                         <li>
-                            <a href="{% url 'location'%}">
-                                <i class="fas fa-map-marker-alt"></i>Add Location</a>
-                        </li>
+                          <li class="has-sub">
+                            <a class="js-arrow" href="#">
+                                <i class="fas fa-copy"></i>Location</a>
+                            <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
+                                 <li>
+                                    <a href="{% url 'location'%}">
+                                    <i class="fas fa-map-marker-alt"></i>Add Locations</a>
+                                </li>
+
+                                 <li>
+                                <a href="{% url 'Llist'%}">
+                                <i class="far fa-check-square"></i>View Locations</a>
+                                 </li>
+
+                            </ul>
+                       </li>
                        
                     </ul>
                 </nav>
