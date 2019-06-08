@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
 def straight_d(days,life,value,salvagevalue):
     depreciatable_cost=value-salvagevalue
-    depreciation_rate=depreciatable_cost/(life*365)
+    depreciation_rate=Decimal(depreciatable_cost)/Decimal(life*365)
     current_val=depreciatable_cost-(days)*(depreciation_rate)
     print((current_val))
     print((days))
