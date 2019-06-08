@@ -42,7 +42,7 @@ class Asset(models.Model):
     modified_date = models.DateField(default=datetime.date.today)
     purchase_value = models.DecimalField(max_digits=19, decimal_places=2,default=200.00)
     residual_value = models.DecimalField(max_digits=19, decimal_places=2,default=0.00)
-    current_value = models.DecimalField(max_digits=19, decimal_places=2, default=200.00)
+    current_value = models.DecimalField(max_digits=19, decimal_places=2)
     life_expectancy = models.IntegerField(default=3)
     depr_model = models.CharField(choices=Depreciation, max_length=30,default='Straight Line')
     currentVal_date = models.DateField(default=datetime.date.today)
@@ -50,6 +50,12 @@ class Asset(models.Model):
 
     def natural_key(self):
         return self.my_natural_key
+
+    def save(self, *args, **kwargs):
+        if not self.current_value:
+            self.current_value=self.purchase_value
+
+        super().save(*args, **kwargs)
 
 
 

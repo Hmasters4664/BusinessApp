@@ -126,4 +126,4 @@ class LocationList(LoginRequiredMixin, ListView):
     template_name= 'location.html'
     context_object_name = 'locations'
     paginate_by = 10
-    queryset = Asset.objects.all()
+    queryset = Location.objects.all()
