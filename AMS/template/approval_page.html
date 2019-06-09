@@ -377,7 +377,7 @@
                             <td>{{ asset.asset_status }}</td>
                             <td>{{ asset.asset_owner }}</td>
                             <td>{{ asset.asset_user }}</td>
-                            <td ><a href="{% url 'modify' asset.asset_id %}">Approve</a></td>
+                            <td ><a href="{% url 'approve' asset.asset_id %}">Approve</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -359,7 +359,8 @@
                                 <th>Serial</th>
                                 <th>Location</th>
                                 <th>Status</th>
-                                <th>Owner</th>
+                                <th>Asset Manager</th>
+                                <th>Asset User</th>
                                 <th>Edit</th>
                             </tr>
                         </thead>
@@ -375,6 +376,7 @@
                             <td>{{ asset.asset_location }}</td>
                             <td>{{ asset.asset_status }}</td>
                             <td>{{ asset.asset_owner }}</td>
+                            <td>{{ asset.asset_user }}</td>
                             <td ><a href="{% url 'modify' asset.asset_id %}">Edit</a></td>
                         </tr>
                         {% endfor %}

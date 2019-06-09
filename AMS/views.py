@@ -78,16 +78,16 @@ def Search(request):
                                                      "acquisition_date", "asset_name",
                                                      "description", "asset_type", "asset_barcode",
                                                      "asset_serial_number",
-                                                     "asset_location", "asset_status", "asset_owner")
+                                                     "asset_location", "asset_status", "asset_owner",'asset_user')
 
     jason = list(object_list)
     return JsonResponse(jason, safe=False)
 
 ########################################################################################################################
 @login_required
-def approve(request):
+def approve(request,pk):
     if request.user.is_manager:
-        asset = get_object_or_404(Asset, pk=request.kwargs['pk'])
+        asset = get_object_or_404(Asset, pk=pk)
         asset.is_approved=True
         asset.save()
         return redirect('approvallist')
