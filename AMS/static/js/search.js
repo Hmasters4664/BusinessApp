@@ -23,6 +23,7 @@ $(function() {
                     "<td>" + data[i].asset_location + "</td>" +
                     "<td>" + data[i].asset_status + "</td>" +
                     "<td>" + data[i].asset_owner + "</td>" +
+                    "<td>" + data[i].asset_user + "</td>" +
                     '<td>' + "<a href=" + link + ">" + 'Edit' + "</a>" + '</td>' +
                     "</tr>");
                     //console.log(data);

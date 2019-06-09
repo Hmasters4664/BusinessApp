@@ -17,6 +17,13 @@ class Asset(models.Model):
             ('Computer Equipment',  'Computer Equipment'),
             ('Office Furniture & Stationary', 'Office Furniture & Stationary'),
         )
+
+    DEPARTMENT = (
+        ('I.T', 'I.T'),
+        ('Finance', 'Finance'),
+        ('Marketing', 'Marketing'),
+        ('Sales', 'Sales'),
+    )
     STATUS_CHOICES = (
             ('Working', 'Working'),
             ('Disabled', 'Disabled'),
@@ -37,6 +44,7 @@ class Asset(models.Model):
     asset_location = models.ForeignKey("Location", on_delete=models.PROTECT)
     asset_status = models.CharField(choices=STATUS_CHOICES, max_length=10)
     asset_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    asset_user = models.CharField(max_length=30, blank=True, )
     asset_department = models.CharField(max_length=50)
     added_date = models.DateField(default=datetime.date.today)
     modified_date = models.DateField(default=datetime.date.today)
@@ -46,6 +54,8 @@ class Asset(models.Model):
     life_expectancy = models.IntegerField(default=3)
     depr_model = models.CharField(choices=Depreciation, max_length=30,default='Straight Line')
     currentVal_date = models.DateField(default=datetime.date.today)
+    asset_is_approved = models.BooleanField(_('approved'), default=False)
+    asset_department = models.CharField(choices=DEPARTMENT, max_length=10)
     #invoices = models.FileField(upload_to='invoices/', blank=True, )
 
     def natural_key(self):

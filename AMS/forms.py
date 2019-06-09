@@ -5,7 +5,9 @@ from user.models import User
 class AssetForm(ModelForm):
     class Meta:
         model = Asset
-        fields= ['acquisition_date','asset_name','description','asset_type','asset_barcode','asset_serial_number','asset_location','asset_status','asset_owner','asset_department','purchase_value','residual_value','life_expectancy']
+        fields= ['acquisition_date','asset_name','description','asset_type','asset_barcode','asset_serial_number'
+            ,'asset_location','asset_status','asset_user','asset_department','purchase_value','residual_value'
+            ,'life_expectancy']
 
 
 class LocationForm(ModelForm):
@@ -17,3 +19,4 @@ class ModificationForm(ModelForm):
     class Meta:
         model = Modification
         fields = '__all__'
+

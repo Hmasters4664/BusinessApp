@@ -24,6 +24,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django.http import HttpResponseForbidden
+from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 
 
@@ -36,9 +38,11 @@ class addAsset(LoginRequiredMixin, FormView):
     form_class = AssetForm
     success_url = '/assetmanager/assets/'
     def form_valid(self,form):
-        form.save()
+        asset=form.save(commit=False)
+        asset.asset_owner=self.request.user
+        asset.save()
         return super().form_valid(form)
-
+########################################################################################################################
 class addLocation(LoginRequiredMixin, FormView):
     model=Location
     login_url = '/assetmanager/login/'
@@ -50,7 +54,7 @@ class addLocation(LoginRequiredMixin, FormView):
         form.save()
         return super().form_valid(form)
 
-
+#######################################################################################################################
 
 class main(LoginRequiredMixin, ListView):
     model = Asset
@@ -60,16 +64,40 @@ class main(LoginRequiredMixin, ListView):
     template_name= 'index.html'
     context_object_name = 'assets'
     paginate_by = 10
-    queryset = Asset.objects.all()
 
+    def get_queryset(self):
+        if self.request.user.is_manager:
+            return Asset.objects.all()
+        else:
+            return Asset.objects.filter(asset_owner=self.request.user)
+########################################################################################################################
 @login_required
 def Search(request):
-    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).values("asset_id","acquisition_date",
-                                                                                              "asset_name","description","asset_type","asset_barcode","asset_serial_number",
-                                                                                              "asset_location","asset_status","asset_owner")
-    
+    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).values("asset_id",
+                                                     "acquisition_date", "asset_name",
+                                                     "description", "asset_type", "asset_barcode",
+                                                     "asset_serial_number",
+                                                     "asset_location", "asset_status", "asset_owner")
+
     jason = list(object_list)
     return JsonResponse(jason, safe=False)
+
+########################################################################################################################
+@login_required
+def approve(request):
+    if request.user.is_manager:
+        asset = get_object_or_404(Asset, pk=request.kwargs['pk'])
+        asset.is_approved=True
+        asset.save()
+        return redirect('approvallist')
+
+    else:
+        return HttpResponseForbidden()
+
+
+
+    
+#######################################################################################################################
 
 class editAsset(LoginRequiredMixin, UpdateView):
     model = Asset
@@ -84,9 +112,10 @@ class editAsset(LoginRequiredMixin, UpdateView):
         date = datetime.now()
         dates=date.strftime("%Y-%m-%d")
         asset.modified_date = dates
+        asset.asset_department = self.request.user.department
         return asset
 
-
+########################################################################################################################
 class Login(FormView):
     template_name = 'login.html'
     success_url = '/assetmanager/assets/'
@@ -117,7 +146,7 @@ class Login(FormView):
         if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
-
+#########################################################################################################################
 class LocationList(LoginRequiredMixin, ListView):
     model = Location
     login_url = '/assetmanager/login/'
@@ -127,3 +156,26 @@ class LocationList(LoginRequiredMixin, ListView):
     context_object_name = 'locations'
     paginate_by = 10
     queryset = Location.objects.all()
+
+########################################################################################################################
+class ApprovalList(LoginRequiredMixin, ListView):
+    model = Asset
+    login_url = '/assetmanager/login/'
+    redirect_field_name = 'redirect_to'
+    #hello()
+    template_name= 'approval_page.html'
+    context_object_name = 'assets'
+    paginate_by = 10
+    queryset = Asset.objects.filter(asset_is_approved=False)
+
+########################################################################################################################
+@login_required
+def SpecialSearch(request):
+    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).filter(asset_is_approved=False).values("asset_id",
+                                                     "acquisition_date", "asset_name",
+                                                     "description", "asset_type", "asset_barcode",
+                                                     "asset_serial_number",
+                                                     "asset_location", "asset_status", "asset_owner")
+
+    jason = list(object_list)
+    return JsonResponse(jason, safe=False)

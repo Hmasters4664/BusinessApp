@@ -6,6 +6,13 @@ from .managers import UserManager
 
 # Create your models here.
 
+DEPARTMENT = (
+    ('I.T', 'I.T'),
+    ('Finance', 'Finance'),
+    ('Marketing', 'Marketing'),
+    ('Sales', 'Sales'),
+)
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
@@ -13,6 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('staff'), default=False)
     is_manager = models.BooleanField(_('manger'), default=False)
     is_active = models.BooleanField(_('active'), default=True)
+    department = models.CharField(_('department assinged'),choices=DEPARTMENT,max_length=30, blank=True)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
