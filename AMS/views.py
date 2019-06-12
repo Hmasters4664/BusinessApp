@@ -41,6 +41,7 @@ class addAsset(LoginRequiredMixin, FormView):
     def form_valid(self,form):
         asset=form.save(commit=False)
         asset.asset_owner=self.request.user
+        #asset.asset_department=self.request.user.department
         asset.save()
         return super().form_valid(form)
 ########################################################################################################################
