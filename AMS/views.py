@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.http import is_safe_url
 from django.http import HttpResponse
 from django.http import JsonResponse
-from .models import Asset, Location
+from .models import Asset, Location,Records
 from django.views.generic import CreateView
 from django.views.generic.edit import FormView
 from django.views.generic.base import View, TemplateView
@@ -41,8 +41,9 @@ class addAsset(LoginRequiredMixin, FormView):
     def form_valid(self,form):
         asset=form.save(commit=False)
         asset.asset_owner=self.request.user
-        #asset.asset_department=self.request.user.department
         asset.save()
+        rec=Records(description='user: '+self.request.user.get_employee_id()+ 'added a new asset with id '+str(asset.asset_id))
+        rec.save()
         return super().form_valid(form)
 ########################################################################################################################
 class addLocation(LoginRequiredMixin, FormView):
@@ -84,9 +85,12 @@ def Search(request):
 def approve(request,pk):
     if request.user.is_manager:
         asset = get_object_or_404(Asset, pk=pk)
-        asset.is_approved=True
+        asset.asset_is_approved=True
         asset.save()
-        return redirect('approvallist')
+        rec = Records(description='user: ' + request.user.get_employee_id() + 'approved an asset with id ' + str(
+            asset.asset_id))
+        rec.save()
+        return redirect('pending')
 
     else:
         return HttpResponseForbidden()
@@ -109,7 +113,9 @@ class editAsset(LoginRequiredMixin, UpdateView):
         date = datetime.now()
         dates=date.strftime("%Y-%m-%d")
         asset.modified_date = dates
-        asset.asset_department = self.request.user.department
+        rec = Records(description='user: ' + self.request.user.get_employee_id() + 'modified an asset with id ' + str(
+            asset.asset_id))
+        rec.save()
         return asset
 
 ########################################################################################################################
@@ -176,3 +182,13 @@ def SpecialSearch(request):
 
     jason = list(object_list)
     return JsonResponse(jason, safe=False)
+
+########################################################################################################################
+@login_required
+def logout(request):
+    success_url = '/assetmanager/login/'
+    redirect_field_name = REDIRECT_FIELD_NAME
+    auth_logout(request)
+
+    return redirect(success_url)
+

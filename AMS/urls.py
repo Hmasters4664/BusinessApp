@@ -12,5 +12,6 @@ urlpatterns = [
     url('Llist', LocationList.as_view(), name='Llist'),
     url('pending', ApprovalList.as_view(), name='pending'),
     url('specialsearch',views.SpecialSearch,name='specialsearch'),
+    url('logout',views.logout,name='logout'),
     url(r'^approve/(?P<pk>\d+)/',views.approve,name='approve')
 ]
