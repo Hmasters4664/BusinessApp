@@ -83,10 +83,9 @@ class Location(models.Model):
         return self.adress
 
 
-class Modification(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    asset = models.ForeignKey("Asset", on_delete=models.PROTECT)
-    modified_date = models.DateField()
+class Records(models.Model):
     description = models.TextField(max_length=1000)
+    date = models.DateField(default=datetime.date.today)
+
 
 

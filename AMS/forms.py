@@ -15,8 +15,4 @@ class LocationForm(ModelForm):
         model = Location
         fields= ['city','province','country','building','floor','adress']
 
-class ModificationForm(ModelForm):
-    class Meta:
-        model = Modification
-        fields = '__all__'
 

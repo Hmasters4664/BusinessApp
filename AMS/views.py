@@ -6,13 +6,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.http import is_safe_url
 from django.http import HttpResponse
 from django.http import JsonResponse
-from .models import Asset, Location, Modification
+from .models import Asset, Location
 from django.views.generic import CreateView
 from django.views.generic.edit import FormView
 from django.views.generic.base import View, TemplateView
 from django.core import serializers
 import json
-from .forms import AssetForm, LocationForm, ModificationForm
+from .forms import AssetForm, LocationForm
 from django.views.generic.list import ListView
 from django.views.generic import UpdateView
 #from .background import hello
@@ -66,12 +66,7 @@ class main(LoginRequiredMixin, ListView):
     template_name= 'index.html'
     context_object_name = 'assets'
     paginate_by = 10
-
-    def get_queryset(self):
-        if self.request.user.is_manager:
-            return Asset.objects.all()
-        else:
-            return Asset.objects.filter(asset_owner=self.request.user)
+    Asset.objects.all()
 ########################################################################################################################
 @login_required
 def Search(request):

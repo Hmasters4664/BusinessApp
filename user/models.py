@@ -20,11 +20,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('staff'), default=False)
     is_manager = models.BooleanField(_('manger'), default=False)
     is_active = models.BooleanField(_('active'), default=True)
-    department = models.CharField(_('department assinged'),choices=DEPARTMENT,max_length=30, blank=True)
+    employee_id = models.CharField(_('Employee ID'),max_length=50,blank=False)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['employee_id']
 
     class Meta:
         verbose_name = _('user')
@@ -42,3 +42,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         Returns the short name for the user.
         '''
         return self.first_name
+
+    def get_employee_id(self):
+        '''
+        Returns the short name for the user.
+        '''
+        return self.employee_id
