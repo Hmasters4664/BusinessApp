@@ -65,6 +65,9 @@ class Asset(models.Model):
         if not self.current_value:
             self.current_value=self.purchase_value
 
+        if self.residual_value > self.purchase_value:
+            self.residual_value=0.00
+
         super().save(*args, **kwargs)
 
 
