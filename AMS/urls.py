@@ -13,5 +13,6 @@ urlpatterns = [
     url('pending', ApprovalList.as_view(), name='pending'),
     url('specialsearch',views.SpecialSearch,name='specialsearch'),
     url('logout',views.logout,name='logout'),
-    url(r'^approve/(?P<pk>\d+)/',views.approve,name='approve')
+    url(r'^approve/(?P<pk>\d+)/',views.approve,name='approve'),
+    url(r'^export/csv/$', views.to_csv, name='assets_to_csv')
 ]

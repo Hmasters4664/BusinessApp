@@ -348,6 +348,11 @@
                     <div class="container-fluid">
                     <!---<div class="card">-->
                         <div class="table-responsive table--no-card m-b-30">
+                             <form action="{% url 'assets_to_csv'%}">
+                             <button class="au-btn au-btn-icon au-btn--blue" type="submit"><i class="zmdi zmdi-plus">
+
+                             </i>Export To CSV</button>
+                            </form>
                             <table class="table table-borderless table-striped table-earning">
                         <thead>
                             <tr>
@@ -380,8 +385,8 @@
                             <td ><a href="{% url 'modify' asset.asset_id %}">Edit</a></td>
                         </tr>
                         {% endfor %}
-                    </tbody>
-                    </table>
+
+                            </table>
 
 
                     {% if is_paginated %}

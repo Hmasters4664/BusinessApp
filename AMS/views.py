@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.http import is_safe_url
+import csv
 from django.http import HttpResponse
 from django.http import JsonResponse
 from .models import Asset, Location,Records
@@ -28,7 +29,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 
-#Todo test approval flow and user roles
+
 
 # Create your views here.
 class addAsset(LoginRequiredMixin, FormView):
@@ -174,7 +175,8 @@ class ApprovalList(LoginRequiredMixin, ListView):
 ########################################################################################################################
 @login_required
 def SpecialSearch(request):
-    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).filter(asset_is_approved=False).values("asset_id",
+    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).filter(asset_is_approved=False)\
+                                                    .values("asset_id",
                                                      "acquisition_date", "asset_name",
                                                      "description", "asset_type", "asset_barcode",
                                                      "asset_serial_number",
@@ -191,4 +193,21 @@ def logout(request):
     auth_logout(request)
 
     return redirect(success_url)
+########################################################################################################################
+@login_required
+def to_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="assets.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Asset Name', 'Acquisition Date', 'Description', 'Asset Type','Asset Barcode','Serial Number',
+                     'Purchase Value','Current Value','Status','Date Of Value Calculation','Depreciation Method '])
 
+    Assetslist=Asset.objects.filter(asset_is_approved=True).values_list("asset_name",'acquisition_date','description',
+                                                                   'asset_type','asset_barcode','asset_serial_number',
+                                                                   'purchase_value','current_value','asset_status',
+                                                                   'currentVal_date','depr_model')
+
+    for asset in Assetslist:
+        writer.writerow(asset)
+
+    return response
