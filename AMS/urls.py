@@ -14,5 +14,6 @@ urlpatterns = [
     url('specialsearch',views.SpecialSearch,name='specialsearch'),
     url('logout',views.logout,name='logout'),
     url(r'^approve/(?P<pk>\d+)/',views.approve,name='approve'),
-    url(r'^export/csv/$', views.to_csv, name='assets_to_csv')
+    url(r'^export/csv/$', views.to_csv, name='assets_to_csv'),
+    url(r'^export/xlsx/$', views.to_xlsx, name='assets_to_xlsx')
 ]

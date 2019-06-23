@@ -28,32 +28,32 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
-
+import xlwt
 
 
 # Create your views here.
 class addAsset(LoginRequiredMixin, FormView):
     model= Asset
-    login_url = '/assetmanager/login/'
+    login_url = '/login/'
     redirect_field_name = 'redirect_to'
     template_name= 'assets.html'
     form_class = AssetForm
-    success_url = '/assetmanager/assets/'
+    success_url = '/assets/'
     def form_valid(self,form):
         asset=form.save(commit=False)
         asset.asset_owner=self.request.user
         asset.save()
-        rec=Records(description='user: '+self.request.user.get_employee_id()+ 'added a new asset with id '+str(asset.asset_id))
+        rec=Records(description='user: '+self.request.user.get_employee_id()+ ' added a new asset with id '+str(asset.asset_id))
         rec.save()
         return super().form_valid(form)
 ########################################################################################################################
 class addLocation(LoginRequiredMixin, FormView):
     model=Location
-    login_url = '/assetmanager/login/'
+    login_url = '/login/'
     redirect_field_name = 'redirect_to'
     template_name= 'addlocation.html'
     form_class = LocationForm
-    success_url = '/assetmanager/assets/'
+    success_url = '/assets/'
     def form_valid(self,form):
         form.save()
         return super().form_valid(form)
@@ -62,7 +62,7 @@ class addLocation(LoginRequiredMixin, FormView):
 
 class main(LoginRequiredMixin, ListView):
     model = Asset
-    login_url = '/assetmanager/login/'
+    login_url = '/login/'
     redirect_field_name = 'redirect_to'
     #hello()
     template_name= 'index.html'
@@ -88,7 +88,7 @@ def approve(request,pk):
         asset = get_object_or_404(Asset, pk=pk)
         asset.asset_is_approved=True
         asset.save()
-        rec = Records(description='user: ' + request.user.get_employee_id() + 'approved an asset with id ' + str(
+        rec = Records(description='user: ' + request.user.get_employee_id() + ' approved an asset with id ' + str(
             asset.asset_id))
         rec.save()
         return redirect('pending')
@@ -103,18 +103,18 @@ def approve(request,pk):
 
 class editAsset(LoginRequiredMixin, UpdateView):
     model = Asset
-    login_url = '/assetmanager/login/'
+    login_url = '/login/'
     redirect_field_name = 'redirect_to'
     template_name = 'assets.html'
     form_class = AssetForm
-    success_url = '/assetmanager/assets/'
+    success_url = '/assets/'
 
     def get_object(self, *args, **kwargs):
         asset = get_object_or_404(Asset, pk=self.kwargs['pk'])
         date = datetime.now()
         dates=date.strftime("%Y-%m-%d")
         asset.modified_date = dates
-        rec = Records(description='user: ' + self.request.user.get_employee_id() + 'modified an asset with id ' + str(
+        rec = Records(description='user: ' + self.request.user.get_employee_id() + ' modified an asset with id ' + str(
             asset.asset_id))
         rec.save()
         return asset
@@ -122,7 +122,7 @@ class editAsset(LoginRequiredMixin, UpdateView):
 ########################################################################################################################
 class Login(FormView):
     template_name = 'login.html'
-    success_url = '/assetmanager/assets/'
+    success_url = '/assets/'
     form_class = AuthenticationForm
     redirect_field_name = REDIRECT_FIELD_NAME
 
@@ -153,7 +153,7 @@ class Login(FormView):
 #########################################################################################################################
 class LocationList(LoginRequiredMixin, ListView):
     model = Location
-    login_url = '/assetmanager/login/'
+    login_url = '/login/'
     redirect_field_name = 'redirect_to'
     #hello()
     template_name= 'location.html'
@@ -164,7 +164,7 @@ class LocationList(LoginRequiredMixin, ListView):
 ########################################################################################################################
 class ApprovalList(LoginRequiredMixin, ListView):
     model = Asset
-    login_url = '/assetmanager/login/'
+    login_url = '/login/'
     redirect_field_name = 'redirect_to'
     #hello()
     template_name= 'approval_page.html'
@@ -188,7 +188,7 @@ def SpecialSearch(request):
 ########################################################################################################################
 @login_required
 def logout(request):
-    success_url = '/assetmanager/login/'
+    success_url = '/login/'
     redirect_field_name = REDIRECT_FIELD_NAME
     auth_logout(request)
 
@@ -210,4 +210,39 @@ def to_csv(request):
     for asset in Assetslist:
         writer.writerow(asset)
 
+    return response
+########################################################################################################################
+@login_required
+def to_xlsx(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="asset.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Assets')
+
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+
+    columns = ['Asset Name', 'Acquisition Date', 'Description', 'Asset Type','Asset Barcode','Serial Number',
+                     'Purchase Value','Current Value','Status','Date Of Value Calculation','Depreciation Method ']
+
+    Assetslist=Asset.objects.filter(asset_is_approved=True).values_list("asset_name",'acquisition_date','description',
+                                                                   'asset_type','asset_barcode','asset_serial_number',
+                                                                   'purchase_value','current_value','asset_status',
+                                                                   'currentVal_date','depr_model')
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    font_style = xlwt.XFStyle()
+
+    for row in Assetslist:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
     return response
