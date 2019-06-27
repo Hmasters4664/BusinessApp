@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from AMS import views
-from AMS.views import addAsset, addLocation, main, editAsset,Login, LocationList,ApprovalList
+from AMS.views import addAsset, addLocation, main, editAsset,Login, LocationList,ApprovalList, BulkUpload
 
 urlpatterns = [
     url('login', Login.as_view(), name='login'),
@@ -15,5 +15,6 @@ urlpatterns = [
     url('logout',views.logout,name='logout'),
     url(r'^approve/(?P<pk>\d+)/',views.approve,name='approve'),
     url(r'^export/csv/$', views.to_csv, name='assets_to_csv'),
-    url(r'^export/xlsx/$', views.to_xlsx, name='assets_to_xlsx')
+    url(r'^export/xlsx/$', views.to_xlsx, name='assets_to_xlsx'),
+    url(r'XLSupload', BulkUpload.as_view(), name='xls_Upload')
 ]

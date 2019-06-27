@@ -29,7 +29,8 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 import xlwt
-
+from .resources import AssetResource
+from tablib import Dataset
 
 # Create your views here.
 class addAsset(LoginRequiredMixin, FormView):
@@ -246,3 +247,23 @@ def to_xlsx(request):
 
     wb.save(response)
     return response
+########################################################################################################################
+class BulkUpload(LoginRequiredMixin,View):
+    template_name = 'upload.html'
+    success_url = '/assets/'
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        asset_resource =AssetResource()
+        dataset = Dataset()
+        new_assets=self.request.FILES['myfile']
+        imported_data = dataset.load(new_assets.read())
+        result = asset_resource.import_data(dataset, dry_run=True)
+        if not result.has_errors():
+            result = asset_resource.import_data(dataset, dry_run=False)
+
+        return redirect(self.success_url)
+

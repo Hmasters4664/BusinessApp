@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Dashboard</title>
+    <title>Login</title>
     {% load crispy_forms_tags %}
     {% load static %}
     <!-- Fontfaces CSS-->
@@ -41,7 +41,7 @@
 <body class="animsition">
     <div class="page-wrapper">
         <!-- HEADER MOBILE-->
-         <header class="header-mobile d-block d-lg-none">
+        <header class="header-mobile d-block d-lg-none">
             <div class="header-mobile__bar">
                 <div class="container-fluid">
                     <div class="header-mobile-inner">
@@ -101,10 +101,9 @@
                                 <i class="far fa-check-square"></i>View Locations</a>
                                  </li>
 
-
-
                             </ul>
                           </li>
+
 
 
                     </ul>
@@ -122,7 +121,7 @@
             </div>
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
-                     <ul class="list-unstyled navbar__list">
+                    <ul class="list-unstyled navbar__list">
                             <li class="has-sub">
                             <a class="js-arrow" href="#">
                                 <i class="fas fa-desktop"></i>Assets</a>
@@ -144,7 +143,7 @@
 
                             </ul>
                  </li>
-                          <li class="has-sub">
+                        <li class="has-sub">
                             <a class="js-arrow" href="#">
                                 <i class="fas fa-copy"></i>Location</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
@@ -159,7 +158,8 @@
                                  </li>
 
                             </ul>
-                          </li>
+                       </li>
+
 
                     </ul>
                 </nav>
@@ -350,28 +350,33 @@
                         <div>
                             <div>
                                 <div class="card">
-                                    <form method="POST">
-                                        
-                                        {% csrf_token %}
-                                        {{ form|crispy }}
-
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-dot-circle-o"></i> Submit
-                                        </button>
-                                    </form>
-                                        
-                                    </div>
-                                   
+                                    <div class="form">
+                              <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                 <input type="file" name="myfile">
+                                <button type="submit">Upload</button>
+                              </form>
                                 </div>
-                                
+
+                                    </div>
+
+                                </div>
+
                             </div>
-                            </div>
-                            </div>
-                            </div>
-            
-            <!-- END MAIN CONTENT-->
-            <!-- END PAGE CONTAINER-->
-        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        <div class="row">
+                <div class="col-md-12">
+                    <div class="copyright">
+                        <p>Copyright © 2018 Colorlib. All rights reserved. Template by <a href="https://colorlib.com">Colorlib</a>.</p>
+                    </div>
+                </div>
+            </div>
 
     </div>
 
@@ -400,7 +405,6 @@
 
     <!-- Main JS-->
     <script src="{% static 'js/main.js' %}"></script>
-
 </body>
 
 </html>

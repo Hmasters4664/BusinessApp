@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_tables2',
     'user',
+    'import_export',
 ]
 
 
@@ -57,7 +58,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'assetProject.urls'
-
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
