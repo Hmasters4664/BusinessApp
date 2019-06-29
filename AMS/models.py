@@ -41,11 +41,10 @@ class Asset(models.Model):
     asset_type = models.CharField(choices=ASSET_CHOICES, max_length=30, validators=[validate_characters],)
     asset_barcode = models.CharField(max_length=30, blank=True,validators=[validate_characters], )
     asset_serial_number = models.CharField(max_length=80, blank=True, validators=[validate_characters], )
-    asset_location = models.ForeignKey("Location", on_delete=models.PROTECT)
+    asset_location = models.ForeignKey("Location", on_delete=models.PROTECT, blank=True)
     asset_status = models.CharField(choices=STATUS_CHOICES, max_length=10, validators=[validate_characters],)
     asset_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     asset_user = models.CharField(max_length=30, blank=True, validators=[validate_characters], )
-    asset_department = models.CharField(max_length=50,validators=[validate_characters],)
     added_date = models.DateField(default=datetime.date.today)
     modified_date = models.DateField(default=datetime.date.today)
     purchase_value = models.DecimalField(max_digits=19, decimal_places=2,default=200.00,validators = [check_negative_number, check_zero_number],)
@@ -56,7 +55,6 @@ class Asset(models.Model):
     currentVal_date = models.DateField(default=datetime.date.today)
     asset_is_approved = models.BooleanField(_('approved'), default=False)
     asset_department = models.CharField(choices=DEPARTMENT, max_length=10,validators=[validate_characters],)
-    #invoices = models.FileField(upload_to='invoices/', blank=True, )
 
     def natural_key(self):
         return self.my_natural_key

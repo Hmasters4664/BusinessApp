@@ -29,8 +29,12 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 import xlwt
+import xlrd
 from .resources import AssetResource
 from tablib import Dataset
+from import_export import resources
+import magic
+from django.core.files.storage import default_storage
 
 # Create your views here.
 class addAsset(LoginRequiredMixin, FormView):
@@ -257,13 +261,32 @@ class BulkUpload(LoginRequiredMixin,View):
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
-        asset_resource =AssetResource()
-        dataset = Dataset()
-        new_assets=self.request.FILES['myfile']
-        imported_data = dataset.load(new_assets.read())
-        result = asset_resource.import_data(dataset, dry_run=True)
-        if not result.has_errors():
-            result = asset_resource.import_data(dataset, dry_run=False)
+        new_assets=request.FILES['myfile']
+
+        if(new_assets.size > 1048576):
+            return render(request,'500_error.html')
+
+        mime = magic.from_buffer(new_assets.read(), mime=True)
+
+        if (mime == 'application/vnd.ms-excel'):
+            data = xlrd.open_workbook(new_assets)
+            table = data.sheets()[0]
+            #for i in range(1,  table.nrows):
+                obj, created = Asset.objects.get_or_create(
+             #       first_name='John',
+            #        last_name='Lennon',
+            #        defaults={'birthday': date(1940, 10, 9)},
+            #    )
+
+
+
+
+
+
+
+
+
+
 
         return redirect(self.success_url)
-
+########################################################################################################################
