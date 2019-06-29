@@ -269,15 +269,15 @@ class BulkUpload(LoginRequiredMixin,View):
         mime = magic.from_buffer(new_assets.read(), mime=True)
 
         if (mime == 'application/vnd.ms-excel'):
-            data = xlrd.open_workbook(new_assets)
+            data = xlrd.open_workbook(file_contents=new_assets.read())
             table = data.sheets()[0]
-            #for i in range(1,  table.nrows):
-                obj, created = Asset.objects.get_or_create(
-             #       first_name='John',
-            #        last_name='Lennon',
-            #        defaults={'birthday': date(1940, 10, 9)},
-            #    )
-
+            for i in range(1,  table.nrows):
+               row= table.row(i)
+               newasset=Asset(acquisition_date=row[0],	asset_name=row[1], description=row[2], asset_type=row[3],
+                               asset_barcode=row[4], asset_serial_number=row[5], asset_status=row[6], asset_user=row[7],
+                               asset_department=row[8],	purchase_value=row[9], residual_value=row[10],
+                               life_expectancy=row[11], depr_model=row[12])
+               newasset.save()
 
 
 
