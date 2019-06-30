@@ -41,7 +41,7 @@ class Asset(models.Model):
     asset_type = models.CharField(choices=ASSET_CHOICES, max_length=30, validators=[validate_characters],)
     asset_barcode = models.CharField(max_length=30, blank=True,validators=[validate_characters], )
     asset_serial_number = models.CharField(max_length=80, blank=True, validators=[validate_characters], )
-    asset_location = models.ForeignKey("Location", on_delete=models.PROTECT, blank=True)
+    asset_location = models.ForeignKey("Location", on_delete=models.PROTECT, blank=True, null=True)
     asset_status = models.CharField(choices=STATUS_CHOICES, max_length=10, validators=[validate_characters],)
     asset_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     asset_user = models.CharField(max_length=30, blank=True, validators=[validate_characters], )

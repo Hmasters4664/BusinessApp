@@ -35,6 +35,12 @@ from tablib import Dataset
 from import_export import resources
 import magic
 from django.core.files.storage import default_storage
+import os
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
+import uuid
+
 
 # Create your views here.
 class addAsset(LoginRequiredMixin, FormView):
@@ -103,7 +109,7 @@ def approve(request,pk):
 
 
 
-    
+
 #######################################################################################################################
 
 class editAsset(LoginRequiredMixin, UpdateView):
@@ -263,23 +269,32 @@ class BulkUpload(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         new_assets=request.FILES['myfile']
 
+
+
         if(new_assets.size > 1048576):
             return render(request,'500_error.html')
 
         mime = magic.from_buffer(new_assets.read(), mime=True)
 
         if (mime == 'application/vnd.ms-excel'):
-            new_assets = request.FILES['myfile']
+
             new_assets.seek(0)
-            print(new_assets.read())
-            data = xlrd.open_workbook(filename=None,file_contents=new_assets.read() ,encoding_override = 'utf8')
+            filename = str(uuid.uuid4())+'.xls'
+            file_name = default_storage.save(filename, ContentFile(new_assets.read()))
+            data = xlrd.open_workbook(settings.MEDIA_ROOT +'/'+file_name)
             table = data.sheets()[0]
             for i in range(1,  table.nrows):
                row= table.row(i)
-               newasset=Asset(acquisition_date=row[0],	asset_name=row[1], description=row[2], asset_type=row[3],
-                               asset_barcode=row[4], asset_serial_number=row[5], asset_status=row[6], asset_user=row[7],
-                               asset_department=row[8],	purchase_value=row[9], residual_value=row[10],
-                               life_expectancy=row[11], depr_model=row[12])
+               seconds=(row[0].value - 25569)*86400.0
+               date=datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d')
+               newasset=Asset(acquisition_date=date,	asset_name=row[1].value, description=row[2].value,
+                              asset_type=row[3].value,
+                               asset_barcode=row[4].value, asset_serial_number=row[5].value, asset_status=row[6].value,
+                              asset_user=row[7].value,
+                               asset_department=row[8].value,	purchase_value=row[9].value,
+                              residual_value=row[10].value,
+                               life_expectancy=row[11].value, depr_model=row[12].value,
+                              asset_owner= self.request.user)
                newasset.save()
 
 
