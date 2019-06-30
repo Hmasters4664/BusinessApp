@@ -297,7 +297,7 @@ class BulkUpload(LoginRequiredMixin,View):
                               asset_owner= self.request.user)
                newasset.save()
 
-
+            #do error handeling
 
 
 
