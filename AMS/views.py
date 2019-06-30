@@ -35,6 +35,12 @@ from tablib import Dataset
 from import_export import resources
 import magic
 from django.core.files.storage import default_storage
+import os
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
+import uuid
+
 
 # Create your views here.
 class addAsset(LoginRequiredMixin, FormView):
@@ -263,13 +269,19 @@ class BulkUpload(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         new_assets=request.FILES['myfile']
 
+
+
         if(new_assets.size > 1048576):
             return render(request,'500_error.html')
 
         mime = magic.from_buffer(new_assets.read(), mime=True)
 
         if (mime == 'application/vnd.ms-excel'):
-            data = xlrd.open_workbook(file_contents=new_assets.read())
+            new_assets.seek(0)
+            filename = str(uuid.uuid4())+'.xls'
+            file_name = default_storage.save(filename, ContentFile(new_assets.read()))
+
+            data = xlrd.open_workbook(settings.MEDIA_ROOT +file_name)
             table = data.sheets()[0]
             for i in range(1,  table.nrows):
                row= table.row(i)
