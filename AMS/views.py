@@ -38,7 +38,9 @@ from django.core.files.storage import default_storage
 import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.core.exceptions import ValidationError
 from django.conf import settings
+
 import uuid
 
 
@@ -287,24 +289,24 @@ class BulkUpload(LoginRequiredMixin,View):
                row= table.row(i)
                seconds=(row[0].value - 25569)*86400.0
                date=datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d')
+               barcode=str(row[4].value)
                newasset=Asset(acquisition_date=date,	asset_name=row[1].value, description=row[2].value,
                               asset_type=row[3].value,
                                asset_barcode=row[4].value, asset_serial_number=row[5].value, asset_status=row[6].value,
                               asset_user=row[7].value,
                                asset_department=row[8].value,	purchase_value=row[9].value,
                               residual_value=row[10].value,
-                               life_expectancy=row[11].value, depr_model=row[12].value,
-                              asset_owner= self.request.user)
+                               life_expectancy =row[11].value, depr_model=row[12].value,
+                              asset_owner = self.request.user)
+
+               try:
+                newasset.full_clean()
+               except ValidationError as e:
+                print(e)
+                return render(request, '500_error.html')
                newasset.save()
-
-            #do error handeling
-
-
-
-
-
-
-
+        else:
+            return render(request, '500_error.html')
 
         return redirect(self.success_url)
 ########################################################################################################################

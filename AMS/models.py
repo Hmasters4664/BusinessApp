@@ -49,7 +49,7 @@ class Asset(models.Model):
     modified_date = models.DateField(default=datetime.date.today)
     purchase_value = models.DecimalField(max_digits=19, decimal_places=2,default=200.00,validators = [check_negative_number, check_zero_number],)
     residual_value = models.DecimalField(max_digits=19, decimal_places=2,default=0.00,validators = [check_negative_number])
-    current_value = models.DecimalField(max_digits=19, decimal_places=2,validators = [check_negative_number])
+    current_value = models.DecimalField(max_digits=19, decimal_places=2,validators = [check_negative_number],blank=True)
     life_expectancy = models.IntegerField(default=3,validators = [check_negative_number, check_zero_number])
     depr_model = models.CharField(choices=Depreciation, max_length=30,default='Straight Line', validators=[validate_characters],)
     currentVal_date = models.DateField(default=datetime.date.today)
@@ -67,8 +67,6 @@ class Asset(models.Model):
             self.residual_value=0.00
 
         super().save(*args, **kwargs)
-
-
 
 
 class Location(models.Model):
