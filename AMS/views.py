@@ -310,3 +310,6 @@ class BulkUpload(LoginRequiredMixin,View):
 
         return redirect(self.success_url)
 ########################################################################################################################
+@login_required
+def noficications(request):
+    AssetsList = Asset.objects.filter(asset_is_approved=False).count()
