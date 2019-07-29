@@ -92,6 +92,7 @@ def Search(request):
                                                      "asset_location", "asset_status", "asset_owner",'asset_user')
 
     jason = list(object_list)
+    print(jason)
     return JsonResponse(jason, safe=False)
 
 ########################################################################################################################
@@ -321,3 +322,15 @@ def noficications(request):
 
     jayson = list(AssetsList)
     return JsonResponse(jayson, safe=False)
+
+########################################################################################################################
+@login_required
+def locationSearch(request):
+    object_list = Location.objects.filter(city__startswith=request.GET.get('search'))\
+                                                    .values("city", "province",
+                                                     "country", "building", "floor",
+                                                     "adress")
+
+    jason = list(object_list)
+    return JsonResponse(jason, safe=False)
+
