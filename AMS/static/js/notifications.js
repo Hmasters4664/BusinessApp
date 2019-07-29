@@ -34,5 +34,5 @@ function executeQuery() {
 
 $(document).ready(function() {
   // run the first time; all subsequent calls will take care of themselves
-  setTimeout(executeQuery, 300000);
+  setTimeout(executeQuery, 300);
 });
