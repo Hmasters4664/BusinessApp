@@ -291,6 +291,8 @@ class BulkUpload(LoginRequiredMixin,View):
                                life_expectancy=row[11], depr_model=row[12])
                newasset.save()
 
+                #################
+
 
 
 
