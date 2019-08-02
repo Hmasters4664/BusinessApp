@@ -253,6 +253,7 @@
                                 <th>Asset Manager</th>
                                 <th>Asset User</th>
                                 <th>Approve</th>
+                                <th>Reject</th>
                             </tr>
                         </thead>
                         <tbody id="searchBody">
@@ -269,6 +270,7 @@
                             <td>{{ asset.asset_owner }}</td>
                             <td>{{ asset.asset_user }}</td>
                             <td ><a href="{% url 'approve' asset.asset_id %}">Approve</a></td>
+                            <td ><a href="{% url 'reject' asset.asset_id %}">Reject</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

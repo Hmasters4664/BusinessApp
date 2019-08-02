@@ -9,6 +9,8 @@ from .managers import UserManager
 from django.utils.translation import ugettext_lazy as _
 from .validators import validate_characters, check_negative_number, check_zero_number
 # Create your models here.
+
+
 class Asset(models.Model):
     
     ASSET_CHOICES = (
@@ -34,9 +36,9 @@ class Asset(models.Model):
         ('Double-Declining Balance', 'Double-Declining Balance'),
         ('Sum of Years', 'Sum of Years'),
     )
-    asset_id= models.AutoField(primary_key=True)
+    asset_id = models.AutoField(primary_key=True)
     acquisition_date = models.DateField(default=datetime.date.today)
-    asset_name =  models.CharField(max_length=50, blank=True, validators=[validate_characters], )
+    asset_name = models.CharField(max_length=50, blank=True, validators=[validate_characters], )
     description = models.TextField(max_length=200, validators=[validate_characters],)
     asset_type = models.CharField(choices=ASSET_CHOICES, max_length=30, validators=[validate_characters],)
     asset_barcode = models.CharField(max_length=30, blank=True,validators=[validate_characters], )
@@ -54,6 +56,8 @@ class Asset(models.Model):
     depr_model = models.CharField(choices=Depreciation, max_length=30,default='Straight Line', validators=[validate_characters],)
     currentVal_date = models.DateField(default=datetime.date.today)
     asset_is_approved = models.BooleanField(_('approved'), default=False)
+    asset_is_rejected = models.BooleanField(_('rejected'), default=False)
+    rejection_reason = models.CharField(max_length=50, blank=True, validators=[validate_characters], )
     asset_department = models.CharField(choices=DEPARTMENT, max_length=10,validators=[validate_characters],)
 
     def natural_key(self):
@@ -61,10 +65,17 @@ class Asset(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.current_value:
-            self.current_value=self.purchase_value
+            self.current_value = self.purchase_value
 
         if self.residual_value > self.purchase_value:
-            self.residual_value=0.00
+            self.residual_value = 0.00
+
+        if self.asset_is_rejected:
+            self.asset_is_approved = False
+
+        if self.asset_is_approved:
+            self.asset_is_rejected = False
+            self.rejection_reason = ''
 
         super().save(*args, **kwargs)
 
@@ -75,7 +86,7 @@ class Location(models.Model):
     province = models.CharField(max_length=50,validators=[validate_characters],)
     country = models.CharField(max_length=20,validators=[validate_characters],)
     building = models.TextField(max_length=1000, blank=True,validators=[validate_characters],)
-    floor =models.CharField(max_length=3,validators=[validate_characters],)
+    floor = models.CharField(max_length=3,validators=[validate_characters],)
     adress = models.TextField(max_length=200,validators=[validate_characters],)
 
     def __str__(self):
@@ -85,6 +96,7 @@ class Location(models.Model):
 class Records(models.Model):
     description = models.TextField(max_length=1000)
     date = models.DateField(default=datetime.date.today)
+
 
 
 

@@ -5,6 +5,8 @@ function executeQuery() {
     dataType: "json",
     success: function(data) {
       // do something with the return value here if you like
+      var num = data.length;
+      $('#num').text(num);
       $('#notificationinfo').html('');
       var holder1 = "mess__item";
       var holder2 = "image img-cir img-40";
