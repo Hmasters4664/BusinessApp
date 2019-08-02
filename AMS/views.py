@@ -28,6 +28,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
+from django.db.models import Q
 import xlwt
 import xlrd
 from .resources import AssetResource
@@ -38,7 +39,9 @@ from django.core.files.storage import default_storage
 import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.core.exceptions import ValidationError
 from django.conf import settings
+
 import uuid
 
 
@@ -51,13 +54,16 @@ class addAsset(LoginRequiredMixin, FormView):
     form_class = AssetForm
     success_url = '/assets/'
     def form_valid(self,form):
-        asset=form.save(commit=False)
-        asset.asset_owner=self.request.user
+        asset = form.save(commit=False)
+        asset.asset_owner = self.request.user
         asset.save()
-        rec=Records(description='user: '+self.request.user.get_employee_id()+ ' added a new asset with id '+str(asset.asset_id))
+        rec = Records(description='user: '+self.request.user.get_employee_id() +
+                                  ' added a new asset with id '+str(asset.asset_id))
         rec.save()
         return super().form_valid(form)
 ########################################################################################################################
+
+
 class addLocation(LoginRequiredMixin, FormView):
     model=Location
     login_url = '/login/'
@@ -65,17 +71,18 @@ class addLocation(LoginRequiredMixin, FormView):
     template_name= 'addlocation.html'
     form_class = LocationForm
     success_url = '/assets/'
+
     def form_valid(self,form):
         form.save()
         return super().form_valid(form)
 
 #######################################################################################################################
 
+
 class main(LoginRequiredMixin, ListView):
     model = Asset
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
-    #hello()
     template_name= 'index.html'
     context_object_name = 'assets'
     paginate_by = 10
@@ -90,6 +97,7 @@ def Search(request):
                                                      "asset_location", "asset_status", "asset_owner",'asset_user')
 
     jason = list(object_list)
+    print(jason)
     return JsonResponse(jason, safe=False)
 
 ########################################################################################################################
@@ -106,11 +114,8 @@ def approve(request,pk):
 
     else:
         return HttpResponseForbidden()
-
-
-
-    
 #######################################################################################################################
+
 
 class editAsset(LoginRequiredMixin, UpdateView):
     model = Asset
@@ -125,12 +130,16 @@ class editAsset(LoginRequiredMixin, UpdateView):
         date = datetime.now()
         dates=date.strftime("%Y-%m-%d")
         asset.modified_date = dates
+        asset.asset_is_rejected = False
+        asset.asset_is_approved = False
         rec = Records(description='user: ' + self.request.user.get_employee_id() + ' modified an asset with id ' + str(
             asset.asset_id))
         rec.save()
         return asset
 
 ########################################################################################################################
+
+
 class Login(FormView):
     template_name = 'login.html'
     success_url = '/assets/'
@@ -161,37 +170,53 @@ class Login(FormView):
         if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
-#########################################################################################################################
+########################################################################################################################
+
+
 class LocationList(LoginRequiredMixin, ListView):
     model = Location
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
-    #hello()
     template_name= 'location.html'
     context_object_name = 'locations'
     paginate_by = 10
     queryset = Location.objects.all()
 
 ########################################################################################################################
+
+
 class ApprovalList(LoginRequiredMixin, ListView):
     model = Asset
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
-    #hello()
-    template_name= 'approval_page.html'
-    context_object_name = 'assets'
+    template_name = 'approval_page.html'
     paginate_by = 10
-    queryset = Asset.objects.filter(asset_is_approved=False)
+
+    def get_context_data(self, *, assets=None, **kwargs):
+        context = super(ApprovalList, self).get_context_data()
+        if self.request.user.is_manager:
+            context['assets'] = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=False)
+
+        else:
+            context['assets'] = ''
+
+        return context
 
 ########################################################################################################################
 @login_required
 def SpecialSearch(request):
-    object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).filter(asset_is_approved=False)\
+
+    if request.user.is_manager:
+        object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).\
+            filter(asset_is_approved=False, asset_is_rejected=False)\
                                                     .values("asset_id",
                                                      "acquisition_date", "asset_name",
                                                      "description", "asset_type", "asset_barcode",
                                                      "asset_serial_number",
                                                      "asset_location", "asset_status", "asset_owner")
+
+    else:
+        object_list = ''
 
     jason = list(object_list)
     return JsonResponse(jason, safe=False)
@@ -213,12 +238,12 @@ def to_csv(request):
     writer.writerow(['Asset Name', 'Acquisition Date', 'Description', 'Asset Type','Asset Barcode','Serial Number',
                      'Purchase Value','Current Value','Status','Date Of Value Calculation','Depreciation Method '])
 
-    Assetslist=Asset.objects.filter(asset_is_approved=True).values_list("asset_name",'acquisition_date','description',
+    assetslist=Asset.objects.filter(asset_is_approved=True).values_list("asset_name",'acquisition_date','description',
                                                                    'asset_type','asset_barcode','asset_serial_number',
                                                                    'purchase_value','current_value','asset_status',
                                                                    'currentVal_date','depr_model')
 
-    for asset in Assetslist:
+    for asset in assetslist:
         writer.writerow(asset)
 
     return response
@@ -236,11 +261,10 @@ def to_xlsx(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-
     columns = ['Asset Name', 'Acquisition Date', 'Description', 'Asset Type','Asset Barcode','Serial Number',
                      'Purchase Value','Current Value','Status','Date Of Value Calculation','Depreciation Method ']
 
-    Assetslist=Asset.objects.filter(asset_is_approved=True).values_list("asset_name",'acquisition_date','description',
+    assetslist = Asset.objects.filter(asset_is_approved=True).values_list("asset_name",'acquisition_date','description',
                                                                    'asset_type','asset_barcode','asset_serial_number',
                                                                    'purchase_value','current_value','asset_status',
                                                                    'currentVal_date','depr_model')
@@ -250,7 +274,7 @@ def to_xlsx(request):
 
     font_style = xlwt.XFStyle()
 
-    for row in Assetslist:
+    for row in assetslist:
         row_num += 1
         for col_num in range(len(row)):
             ws.write(row_num, col_num, row[col_num], font_style)
@@ -258,7 +282,9 @@ def to_xlsx(request):
     wb.save(response)
     return response
 ########################################################################################################################
-class BulkUpload(LoginRequiredMixin,View):
+
+
+class BulkUpload(LoginRequiredMixin, View):
     template_name = 'upload.html'
     success_url = '/assets/'
 
@@ -267,40 +293,79 @@ class BulkUpload(LoginRequiredMixin,View):
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
-        new_assets=request.FILES['myfile']
+        new_assets = request.FILES['myfile']
 
-
-
-        if(new_assets.size > 1048576):
+        if new_assets.size > 1048576:
             return render(request,'500_error.html')
 
         mime = magic.from_buffer(new_assets.read(), mime=True)
 
         if (mime == 'application/vnd.ms-excel'):
+
             new_assets.seek(0)
             filename = str(uuid.uuid4())+'.xls'
             file_name = default_storage.save(filename, ContentFile(new_assets.read()))
-
-            data = xlrd.open_workbook(settings.MEDIA_ROOT +file_name)
+            data = xlrd.open_workbook(settings.MEDIA_ROOT +'/'+file_name)
             table = data.sheets()[0]
             for i in range(1,  table.nrows):
-               row= table.row(i)
-               newasset=Asset(acquisition_date=row[0],	asset_name=row[1], description=row[2], asset_type=row[3],
-                               asset_barcode=row[4], asset_serial_number=row[5], asset_status=row[6], asset_user=row[7],
-                               asset_department=row[8],	purchase_value=row[9], residual_value=row[10],
-                               life_expectancy=row[11], depr_model=row[12])
+               row = table.row(i)
+               seconds =(row[0].value - 25569)*86400.0
+               date = datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d')
+               barcode = str(row[4].value)
+               newasset = Asset(acquisition_date=date,	asset_name=row[1].value, description=row[2].value,
+                              asset_type=row[3].value,
+                               asset_barcode=row[4].value, asset_serial_number=row[5].value, asset_status=row[6].value,
+                              asset_user=row[7].value,
+                               asset_department=row[8].value,	purchase_value=row[9].value,
+                              residual_value=row[10].value,
+                               life_expectancy =row[11].value, depr_model=row[12].value,
+                              asset_owner = self.request.user)
+
+               try:
+                newasset.full_clean()
+               except ValidationError as e:
+                print(e)
+                return render(request, '500_error.html')
                newasset.save()
-
-                #################
-
-
-
-
-
-
-
-
-
+        else:
+            return render(request, '500_error.html')
 
         return redirect(self.success_url)
 ########################################################################################################################
+@login_required
+def noficications(request):
+    AssetsList = Asset.objects.filter(asset_is_approved=False).values("asset_id",
+                                                     "acquisition_date", "asset_name",
+                                                     "description", "asset_type", "asset_barcode",
+                                                     "asset_serial_number",
+                                                     "asset_location", "asset_status", "asset_owner")\
+                     .order_by('-acquisition_date')[:5]
+
+    jayson = list(AssetsList)
+    return JsonResponse(jayson, safe=False)
+
+########################################################################################################################
+@login_required
+def locationSearch(request):
+    object_list = Location.objects.filter(city__startswith=request.GET.get('search'))\
+                                                    .values("city", "province",
+                                                     "country", "building", "floor",
+                                                     "adress")
+
+    jason = list(object_list)
+    return JsonResponse(jason, safe=False)
+########################################################################################################################
+
+@login_required
+def reject(request, pk):
+    if request.user.is_manager:
+        asset = get_object_or_404(Asset, pk=pk)
+        asset.asset_is_rejected = True
+        asset.save()
+        rec = Records(description='user: ' + request.user.get_employee_id() + ' rejected an asset with id ' + str(
+            asset.asset_id))
+        rec.save()
+        return redirect('pending')
+
+    else:
+        return HttpResponseForbidden()

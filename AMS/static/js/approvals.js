@@ -12,6 +12,7 @@ $(function() {
                 $('#searchBody').html('');
                 for (i in data){
                 var link = "approve/" +  data[i].asset_id;
+                var rlink = "reject/" +  data[i].asset_id;
                 $('#searchBody').append(
                     "<tr>" +
                     "<td>" + data[i].acquisition_date + "</td>" +
@@ -25,6 +26,7 @@ $(function() {
                     "<td>" + data[i].asset_owner + "</td>" +
                     "<td>" + data[i].asset_user + "</td>" +
                     '<td>' + "<a href=" + link + ">" + 'Approve' + "</a>" + '</td>' +
+                    '<td>' + "<a href=" + rlink + ">" + 'Reject' + "</a>" + '</td>' +
                     "</tr>");
                     //console.log(data);
                 };
