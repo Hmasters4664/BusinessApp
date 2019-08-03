@@ -369,3 +369,10 @@ def reject(request, pk):
 
     else:
         return HttpResponseForbidden()
+########################################################################################################################
+
+@login_required
+def getname(request):
+    name = request.user.get_full_name()
+    return JsonResponse(name, safe=False)
+########################################################################################################################

@@ -38,6 +38,7 @@
     <script type="text/javascript">
          var USERS_LIST_JSON_URL = '{% url "search" %}';
          var NOTIFICATIONS = '{% url "notifications" %}';
+         var USERNAME = '{% url "getname" %}';
     </script>
 
 
@@ -205,7 +206,7 @@
                                 <div class="account-wrap">
                                     <div class="account-item clearfix js-item-menu">
                                         <div class="content">
-                                            <a class="js-acc-btn" href="#">Options</a>
+                                            <a class="js-acc-btn" href="#" id="name">Options</a>
                                         </div>
                                         <div class="account-dropdown js-dropdown">
                                             <div class="account-dropdown__body">
@@ -337,6 +338,7 @@
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/search.js' %}"></script>
     <script src="{% static 'js/notifications.js' %}"></script>
+    <script src="{% static 'js/getname.js' %}"></script>
 
 
     
