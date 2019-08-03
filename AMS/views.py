@@ -340,12 +340,27 @@ class BulkUpload(LoginRequiredMixin, View):
 ########################################################################################################################
 @login_required
 def noficications(request):
-    AssetsList = Asset.objects.filter(asset_is_approved=False).values("asset_id",
+    if request.user.is_manager:
+        AssetsList = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=False).values("asset_id",
                                                      "acquisition_date", "asset_name",
                                                      "description", "asset_type", "asset_barcode",
                                                      "asset_serial_number",
                                                      "asset_location", "asset_status", "asset_owner")\
                      .order_by('-acquisition_date')[:5]
+    else:
+        AssetsList = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=True, asset_owner=request.user)\
+            .values("asset_id",
+                                                                                                   "acquisition_date",
+                                                                                                   "asset_name",
+                                                                                                   "description",
+                                                                                                   "asset_type",
+                                                                                                   "asset_barcode",
+                                                                                                   "asset_serial_number",
+                                                                                                   "asset_location",
+                                                                                                   "asset_status",
+                                                                                                   "asset_owner") \
+            .order_by('-acquisition_date')[:5]
+
 
     jayson = list(AssetsList)
     return JsonResponse(jayson, safe=False)
