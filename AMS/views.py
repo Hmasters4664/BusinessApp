@@ -216,7 +216,13 @@ def SpecialSearch(request):
                                                      "asset_location", "asset_status", "asset_owner")
 
     else:
-        object_list = ''
+        object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).\
+            filter(asset_is_approved=False, asset_is_rejected=True, asset_owner=request.user)\
+                                                    .values("asset_id",
+                                                     "acquisition_date", "asset_name",
+                                                     "description", "asset_type", "asset_barcode",
+                                                     "asset_serial_number",
+                                                     "asset_location", "asset_status", "asset_owner")
 
     jason = list(object_list)
     return JsonResponse(jason, safe=False)
@@ -356,6 +362,7 @@ def locationSearch(request):
     return JsonResponse(jason, safe=False)
 ########################################################################################################################
 
+
 @login_required
 def reject(request, pk):
     if request.user.is_manager:
@@ -371,8 +378,20 @@ def reject(request, pk):
         return HttpResponseForbidden()
 ########################################################################################################################
 
+
 @login_required
 def getname(request):
     name = request.user.get_full_name()
     return JsonResponse(name, safe=False)
+########################################################################################################################
+
+
+@login_required(login_url='/login/')
+def pending(request):
+    if request.user.is_manager:
+        assets = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=False)
+        return render(request, 'approval_page.html', {'assets': assets})
+    else:
+        assets = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=True, asset_owner=request.user)
+        return render(request, 'rejection_page.html', {'assets': assets})
 ########################################################################################################################
