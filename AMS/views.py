@@ -13,7 +13,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.base import View, TemplateView
 from django.core import serializers
 import json
-from .forms import AssetForm, LocationForm
+from .forms import AssetForm, LocationForm, RejectionForm
 from django.views.generic.list import ListView
 from django.views.generic import UpdateView
 #from .background import hello
@@ -125,17 +125,19 @@ class editAsset(LoginRequiredMixin, UpdateView):
     form_class = AssetForm
     success_url = '/assets/'
 
-    def get_object(self, *args, **kwargs):
-        asset = get_object_or_404(Asset, pk=self.kwargs['pk'])
+    def form_valid(self, form):
+        asset = form.save(commit=False)
         date = datetime.now()
-        dates=date.strftime("%Y-%m-%d")
+        dates = date.strftime("%Y-%m-%d")
         asset.modified_date = dates
         asset.asset_is_rejected = False
         asset.asset_is_approved = False
+        asset.save()
         rec = Records(description='user: ' + self.request.user.get_employee_id() + ' modified an asset with id ' + str(
             asset.asset_id))
         rec.save()
-        return asset
+        return super().form_valid(form)
+
 
 ########################################################################################################################
 
@@ -377,6 +379,28 @@ def locationSearch(request):
     return JsonResponse(jason, safe=False)
 ########################################################################################################################
 
+
+class RejectAsset(LoginRequiredMixin, UpdateView):
+    model = Asset
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    template_name = 'assets.html'
+    form_class = RejectionForm
+    success_url = '/assets/'
+
+
+    def form_valid(self, form):
+        if self.request.user.is_manager:
+            asset = form.save(commit=False)
+            asset.asset_is_rejected = True
+            asset.asset_is_approved = False
+            asset.save()
+            rec = Records(description='user: ' + self.request.user.get_employee_id() + ' rejected an asset with id ' + str(
+                asset.asset_id))
+            rec.save()
+            return super().form_valid(form)
+        else:
+            return HttpResponseForbidden()
 
 @login_required
 def reject(request, pk):
