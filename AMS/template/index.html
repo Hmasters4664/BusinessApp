@@ -38,6 +38,7 @@
     <script type="text/javascript">
          var USERS_LIST_JSON_URL = '{% url "search" %}';
          var NOTIFICATIONS = '{% url "notifications" %}';
+         var USERNAME = '{% url "getname" %}';
     </script>
 
 
@@ -90,7 +91,7 @@
 
                                 <li>
                                 <a href="{% url 'pending'%}">
-                                <i class="far fa-check-square"></i>Pending Approvals</a>
+                                <i class="far fa-check-square"></i>Approval/Rejection List</a>
                                  </li>
 
                             </ul>
@@ -152,7 +153,7 @@
 
                                  <li>
                                 <a href="{% url 'pending'%}">
-                                <i class="far fa-check-square"></i>Pending Approvals</a>
+                                <i class="far fa-check-square"></i>Approval/Rejection List</a>
                                  </li>
 
                             </ul>
@@ -205,7 +206,7 @@
                                 <div class="account-wrap">
                                     <div class="account-item clearfix js-item-menu">
                                         <div class="content">
-                                            <a class="js-acc-btn" href="#">Options</a>
+                                            <a class="js-acc-btn" href="#" id="name">Options</a>
                                         </div>
                                         <div class="account-dropdown js-dropdown">
                                             <div class="account-dropdown__body">
@@ -261,7 +262,21 @@
                         </thead>
                         <tbody id="searchBody">
                          {% for asset in assets %}
+
                         <tr>
+                            {% if asset.asset_is_rejected %}
+                            <td bgcolor="pink">{{ asset.acquisition_date }}</td>
+                            <td bgcolor="pink">{{ asset.asset_name }}</td>
+                            <td bgcolor="pink">{{ asset.description }}</td>
+                            <td bgcolor="pink">{{ asset.asset_type }}</td>
+                            <td bgcolor="pink">{{ asset.asset_barcode }}</td>
+                            <td bgcolor="pink">{{ asset.asset_serial_number }}</td>
+                            <td bgcolor="pink">{{ asset.asset_location }}</td>
+                            <td bgcolor="pink">{{ asset.asset_status }}</td>
+                            <td bgcolor="pink">{{ asset.asset_owner }}</td>
+                            <td bgcolor="pink">{{ asset.asset_user }}</td>
+                            <td ><a href="{% url 'modify' asset.asset_id %}">Edit</a></td>
+                            {% else %}
                             <td>{{ asset.acquisition_date }}</td>
                             <td>{{ asset.asset_name }}</td>
                             <td>{{ asset.description }}</td>
@@ -273,6 +288,7 @@
                             <td>{{ asset.asset_owner }}</td>
                             <td>{{ asset.asset_user }}</td>
                             <td ><a href="{% url 'modify' asset.asset_id %}">Edit</a></td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
 
@@ -337,6 +353,7 @@
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/search.js' %}"></script>
     <script src="{% static 'js/notifications.js' %}"></script>
+    <script src="{% static 'js/getname.js' %}"></script>
 
 
     

@@ -38,6 +38,7 @@
     <script type="text/javascript">
          var LOCATION_LIST_JSON_URL = '{% url "LSS" %}';
          var NOTIFICATIONS = '{% url "notifications" %}';
+         var USERNAME ='{% url "getname" %}';
 
     </script>
 
@@ -90,7 +91,7 @@
 
                                  <li>
                                 <a href="{% url 'pending'%}">
-                                <i class="far fa-check-square"></i>Pending Approvals</a>
+                                <i class="far fa-check-square"></i>Approval/Rejection List</a>
                                  </li>
 
                             </ul>
@@ -152,7 +153,7 @@
 
                                 <li>
                                 <a href="{% url 'pending'%}">
-                                <i class="far fa-check-square"></i>Pending Approvals</a>
+                                <i class="far fa-check-square"></i>Approval/Rejection List</a>
                                  </li>
 
                             </ul>
@@ -194,7 +195,7 @@
                                  <div class="noti-wrap">
                                     <div class="noti__item js-item-menu">
                                         <i class="zmdi zmdi-comment-more"></i>
-                                        <span class="quantity">1</span>
+                                        <span class="quantity" id="num">1</span>
                                         <div class="mess-dropdown js-dropdown" id="notificationinfo">
                                             <div class="mess__title">
                                                 <p>You have 2 news message</p>
@@ -205,7 +206,7 @@
                                   <div class="account-wrap">
                                     <div class="account-item clearfix js-item-menu">
                                         <div class="content">
-                                            <a class="js-acc-btn" href="#">Options</a>
+                                            <a class="js-acc-btn" href="#" id="name">Options</a>
                                         </div>
                                         <div class="account-dropdown js-dropdown">
                                             <div class="account-dropdown__body">
@@ -324,6 +325,7 @@
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/locationSearch.js' %}"></script>
     <script src="{% static 'js/notifications.js' %}"></script>
+    <script src="{% static 'js/getname.js' %}"></script>
 
     
 

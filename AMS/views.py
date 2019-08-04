@@ -13,7 +13,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.base import View, TemplateView
 from django.core import serializers
 import json
-from .forms import AssetForm, LocationForm
+from .forms import AssetForm, LocationForm, RejectionForm
 from django.views.generic.list import ListView
 from django.views.generic import UpdateView
 #from .background import hello
@@ -94,7 +94,8 @@ def Search(request):
                                                      "acquisition_date", "asset_name",
                                                      "description", "asset_type", "asset_barcode",
                                                      "asset_serial_number",
-                                                     "asset_location", "asset_status", "asset_owner",'asset_user')
+                                                     "asset_location", "asset_status", "asset_owner",'asset_user',
+                                                    'asset_is_rejected')
 
     jason = list(object_list)
     print(jason)
@@ -125,17 +126,19 @@ class editAsset(LoginRequiredMixin, UpdateView):
     form_class = AssetForm
     success_url = '/assets/'
 
-    def get_object(self, *args, **kwargs):
-        asset = get_object_or_404(Asset, pk=self.kwargs['pk'])
+    def form_valid(self, form):
+        asset = form.save(commit=False)
         date = datetime.now()
-        dates=date.strftime("%Y-%m-%d")
+        dates = date.strftime("%Y-%m-%d")
         asset.modified_date = dates
         asset.asset_is_rejected = False
         asset.asset_is_approved = False
+        asset.save()
         rec = Records(description='user: ' + self.request.user.get_employee_id() + ' modified an asset with id ' + str(
             asset.asset_id))
         rec.save()
-        return asset
+        return super().form_valid(form)
+
 
 ########################################################################################################################
 
@@ -216,7 +219,13 @@ def SpecialSearch(request):
                                                      "asset_location", "asset_status", "asset_owner")
 
     else:
-        object_list = ''
+        object_list = Asset.objects.filter(asset_name__startswith=request.GET.get('search')).\
+            filter(asset_is_approved=False, asset_is_rejected=True, asset_owner=request.user)\
+                                                    .values("asset_id",
+                                                     "acquisition_date", "asset_name",
+                                                     "description", "asset_type", "asset_barcode",
+                                                     "asset_serial_number",
+                                                     "asset_location", "asset_status", "asset_owner")
 
     jason = list(object_list)
     return JsonResponse(jason, safe=False)
@@ -334,12 +343,27 @@ class BulkUpload(LoginRequiredMixin, View):
 ########################################################################################################################
 @login_required
 def noficications(request):
-    AssetsList = Asset.objects.filter(asset_is_approved=False).values("asset_id",
+    if request.user.is_manager:
+        AssetsList = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=False).values("asset_id",
                                                      "acquisition_date", "asset_name",
                                                      "description", "asset_type", "asset_barcode",
                                                      "asset_serial_number",
                                                      "asset_location", "asset_status", "asset_owner")\
                      .order_by('-acquisition_date')[:5]
+    else:
+        AssetsList = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=True, asset_owner=request.user)\
+            .values("asset_id",
+                                                                                                   "acquisition_date",
+                                                                                                   "asset_name",
+                                                                                                   "description",
+                                                                                                   "asset_type",
+                                                                                                   "asset_barcode",
+                                                                                                   "asset_serial_number",
+                                                                                                   "asset_location",
+                                                                                                   "asset_status",
+                                                                                                   "asset_owner") \
+            .order_by('-acquisition_date')[:5]
+
 
     jayson = list(AssetsList)
     return JsonResponse(jayson, safe=False)
@@ -356,6 +380,29 @@ def locationSearch(request):
     return JsonResponse(jason, safe=False)
 ########################################################################################################################
 
+
+class RejectAsset(LoginRequiredMixin, UpdateView):
+    model = Asset
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    template_name = 'assets.html'
+    form_class = RejectionForm
+    success_url = '/assets/'
+
+
+    def form_valid(self, form):
+        if self.request.user.is_manager:
+            asset = form.save(commit=False)
+            asset.asset_is_rejected = True
+            asset.asset_is_approved = False
+            asset.save()
+            rec = Records(description='user: ' + self.request.user.get_employee_id() + ' rejected an asset with id ' + str(
+                asset.asset_id))
+            rec.save()
+            return super().form_valid(form)
+        else:
+            return HttpResponseForbidden()
+
 @login_required
 def reject(request, pk):
     if request.user.is_manager:
@@ -369,3 +416,22 @@ def reject(request, pk):
 
     else:
         return HttpResponseForbidden()
+########################################################################################################################
+
+
+@login_required
+def getname(request):
+    name = request.user.get_full_name()
+    return JsonResponse(name, safe=False)
+########################################################################################################################
+
+
+@login_required(login_url='/login/')
+def pending(request):
+    if request.user.is_manager:
+        assets = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=False)
+        return render(request, 'approval_page.html', {'assets': assets})
+    else:
+        assets = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=True, asset_owner=request.user)
+        return render(request, 'rejection_page.html', {'assets': assets})
+########################################################################################################################

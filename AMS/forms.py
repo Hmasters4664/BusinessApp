@@ -16,3 +16,9 @@ class LocationForm(ModelForm):
         fields= ['city','province','country','building','floor','adress']
 
 
+class RejectionForm(ModelForm):
+    class Meta:
+        model = Asset
+        fields = ['rejection_reason']
+
+
