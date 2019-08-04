@@ -246,13 +246,9 @@
                                 <th>Buy date</th>
                                 <th>Name</th>
                                 <th>Description</th>
-                                <th>Type</th>
+                                <th>Rejection reason</th>
                                 <th>Barcode</th>
                                 <th>Serial</th>
-                                <th>Location</th>
-                                <th>Status</th>
-                                <th>Asset Manager</th>
-                                <th>Asset User</th>
                                 <th>Edit</th>
                             </tr>
                         </thead>
@@ -262,13 +258,9 @@
                             <td>{{ asset.acquisition_date }}</td>
                             <td>{{ asset.asset_name }}</td>
                             <td>{{ asset.description }}</td>
-                            <td>{{ asset.asset_type }}</td>
+                            <td>{{ asset.rejection_reason }}</td>
                             <td>{{ asset.asset_barcode }}</td>
                             <td>{{ asset.asset_serial_number }}</td>
-                            <td>{{ asset.asset_location }}</td>
-                            <td>{{ asset.asset_status }}</td>
-                            <td>{{ asset.asset_owner }}</td>
-                            <td>{{ asset.asset_user }}</td>
                             <td ><a href="{% url 'modify' asset.asset_id %}">Edit</a></td>
                         </tr>
                         {% endfor %}

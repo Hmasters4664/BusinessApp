@@ -17,13 +17,9 @@ $(function() {
                     "<td>" + data[i].acquisition_date + "</td>" +
                     "<td>" + data[i].asset_name + "</td>" +
                     "<td>" + data[i].description + "</td>" +
-                    "<td>" + data[i].asset_type + "</td>" +
+                    "<td>" + data[i].rejection_reason + "</td>" +
                     "<td>" + data[i].asset_barcode + "</td>" +
                     "<td>" + data[i].asset_serial_number + "</td>" +
-                    "<td>" + data[i].asset_location + "</td>" +
-                    "<td>" + data[i].asset_status + "</td>" +
-                    "<td>" + data[i].asset_owner + "</td>" +
-                    "<td>" + data[i].asset_user + "</td>" +
                     '<td>' + "<a href=" + link + ">" + 'Edit' + "</a>" + '</td>' +
                     "</tr>");
                     //console.log(data);
