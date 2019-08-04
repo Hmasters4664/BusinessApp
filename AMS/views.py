@@ -94,7 +94,8 @@ def Search(request):
                                                      "acquisition_date", "asset_name",
                                                      "description", "asset_type", "asset_barcode",
                                                      "asset_serial_number",
-                                                     "asset_location", "asset_status", "asset_owner",'asset_user')
+                                                     "asset_location", "asset_status", "asset_owner",'asset_user',
+                                                    'asset_is_rejected')
 
     jason = list(object_list)
     print(jason)
