@@ -403,19 +403,6 @@ class RejectAsset(LoginRequiredMixin, UpdateView):
         else:
             return HttpResponseForbidden()
 
-@login_required
-def reject(request, pk):
-    if request.user.is_manager:
-        asset = get_object_or_404(Asset, pk=pk)
-        asset.asset_is_rejected = True
-        asset.save()
-        rec = Records(description='user: ' + request.user.get_employee_id() + ' rejected an asset with id ' + str(
-            asset.asset_id))
-        rec.save()
-        return redirect('pending')
-
-    else:
-        return HttpResponseForbidden()
 ########################################################################################################################
 
 
