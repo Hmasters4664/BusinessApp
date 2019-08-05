@@ -3,6 +3,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from .managers import UserManager
+from .validators import validate_characters, validate_employ, validate_name
 
 # Create your models here.
 
@@ -14,13 +15,13 @@ DEPARTMENT = (
 )
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    email = models.EmailField(_('email address'), unique=True, validators=[validate_characters], )
+    first_name = models.CharField(_('first name'), max_length=30, blank=True, validators=[validate_name], )
+    last_name = models.CharField(_('last name'), max_length=30, blank=True, validators=[validate_name], )
     is_staff = models.BooleanField(_('staff'), default=False)
     is_manager = models.BooleanField(_('manger'), default=False)
     is_active = models.BooleanField(_('active'), default=True)
-    employee_id = models.CharField(_('Employee ID'),max_length=50,blank=False)
+    employee_id = models.CharField(_('Employee ID'),max_length=50, blank=False, validators=[validate_employ], unique=True,  )
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

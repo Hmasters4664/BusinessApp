@@ -1,6 +1,8 @@
 from django.forms import ModelForm
 from AMS.models import *
 from user.models import User
+from django import forms
+
 
 class AssetForm(ModelForm):
     class Meta:
@@ -20,5 +22,8 @@ class RejectionForm(ModelForm):
     class Meta:
         model = Asset
         fields = ['rejection_reason']
+
+
+
 
 

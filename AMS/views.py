@@ -16,7 +16,6 @@ import json
 from .forms import AssetForm, LocationForm, RejectionForm
 from django.views.generic.list import ListView
 from django.views.generic import UpdateView
-#from .background import hello
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
@@ -40,6 +39,8 @@ import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
+from user.forms import UserAccountForm
+from user.models import User
 from django.conf import settings
 
 import uuid
@@ -422,3 +423,19 @@ def pending(request):
         assets = Asset.objects.filter(asset_is_approved=False, asset_is_rejected=True, asset_owner=request.user)
         return render(request, 'rejection_page.html', {'assets': assets})
 ########################################################################################################################
+
+
+class EditUser(LoginRequiredMixin, UpdateView):
+    model = User
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    template_name = 'assets.html'
+    form_class = UserAccountForm
+    success_url = '/assets/'
+
+    def get_object(self, queryset=None):
+        queryset = get_object_or_404(User, employee_id=self.request.user.employee_id)
+
+        return queryset
+#######################################################################################################################
+

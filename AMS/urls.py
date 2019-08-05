@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.urls import include, re_path, path
 from AMS import views
-from AMS.views import addAsset, addLocation, main, editAsset,Login, LocationList,ApprovalList, BulkUpload, RejectAsset
+from AMS.views import addAsset, addLocation, main, editAsset,Login, LocationList,ApprovalList, BulkUpload, RejectAsset,EditUser
 
 urlpatterns = [
     path('', main.as_view(), name='index'),
@@ -22,5 +22,7 @@ urlpatterns = [
     re_path(r'^notifications', views.noficications, name='notifications'),
     re_path(r'^LSS', views.locationSearch, name='LSS'),
     re_path(r'^getname', views.getname, name='getname'),
-    re_path(r'^XLSupload', BulkUpload.as_view(), name='xls_Upload')
+    re_path(r'^XLSupload', BulkUpload.as_view(), name='xls_Upload'),
+    re_path(r'^edituser', EditUser.as_view(), name='EditUser')
+
 ]
