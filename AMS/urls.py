@@ -23,6 +23,6 @@ urlpatterns = [
     re_path(r'^LSS', views.locationSearch, name='LSS'),
     re_path(r'^getname', views.getname, name='getname'),
     re_path(r'^XLSupload', BulkUpload.as_view(), name='xls_Upload'),
-    re_path(r'^edituser', EditUser.as_view(), name='EditUser')
+    re_path(r'^edituser', EditUser.as_view(), name='edituser')
 
 ]
