@@ -92,10 +92,16 @@ class Location(models.Model):
     def __str__(self):
         return self.adress
 
+    def natural_key(self):
+        return self.my_natural_key
+
 
 class Records(models.Model):
     description = models.TextField(max_length=1000)
     date = models.DateField(default=datetime.date.today)
+
+    def natural_key(self):
+        return self.my_natural_key
 
 
 
