@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_tables2',
     'user',
+    'api',
     'import_export',
 ]
 
